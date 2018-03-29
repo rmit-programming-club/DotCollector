@@ -5,3 +5,6 @@
 
 # production
 /react/dist
+
+# Gradle
+/.gradle

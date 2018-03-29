@@ -1,0 +1,6 @@
+Primary: #e50027
+Primary Light: #ff5551
+Primary Dark: #aa0000
+
+Secondary: #ffffff
+Secondary Dark: #cccccc

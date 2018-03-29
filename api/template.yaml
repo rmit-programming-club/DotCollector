@@ -1,0 +1,207 @@
+Resources:
+  WebInterfaceBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      AccessControl: PublicRead
+      BucketName: dot.hazelfire.org
+      WebsiteConfiguration:
+        IndexDocument: index.html
+  Sessions:
+    Type: AWS::S3::Bucket
+  APIGateway:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Body: 
+        swagger: "2.0"
+        info:
+          title: DotCollector
+          description: Offers collecting realtime feedback during a lecture. Creates sessions where feedback can be captured and then analysed
+          version: 0.0.0
+
+        paths:
+          /sessions:
+            post:
+              tags: ['Unimplemented']
+              summary: Creates a new session with the given parameters
+              consumes:
+                - application/json
+                - application/yaml
+              parameters:
+                - in: body
+                  name: Session creation information
+                  description: Outlines the parameters that the session will have
+                  required: true
+                  schema:
+                    $ref: '#/definitions/sessionCreationRequest'
+              responses:
+                '200':
+                  description: Session created successfully
+                  schema:
+                    $ref: '#/definitions/session'
+                '400':
+                  description: An error has occurred. The message will outline the error, but it is likely that the user does not exist
+                  schema:
+                    $ref: '#/definitions/error'
+            get:
+              tags: ["Unimplemented"]
+              summary: Returns all the sessions that have been created by a specific user
+              description: Returns an array with details of all the sessions that have been created by a user
+              responses:
+                '200':
+                  description: Sessions returned successfully
+                  schema:
+                    type: array
+                    items:
+                      $ref: '#/definitions/session'
+          /sessionByAccessCode:
+            get:
+              tags: ["Unimplemented"]
+              summary: Gets a session given an access code
+              parameters:
+                - in: query
+                  name: code
+                  description: Access code for the wanted session
+                  required: true
+                  type: string
+              responses:
+                '200':
+                  description: Session return successfully
+                  schema:
+                    $ref: '#/definitions/session'
+                '404':
+                  description: Could not find session with given code
+                  schema:
+                    $ref: '#/definitions/error'
+          /sessions/{id}:
+            get:
+              tags: ["Unimplemented"]
+              summary: Gets the session details given a unique session identifier
+              parameters:
+                - in: path
+                  name: id
+                  description: The identifier for the session
+                  required: true
+                  type: string
+              responses:
+                '200':
+                  description: Session returned successfully
+                  schema:
+                    $ref: '#/definitions/session'
+                '404':
+                  description: Could not find session with the given identifier
+                  schema:
+                    $ref: '#/definitions/error'
+            delete:
+              tags: ["Unimplemented"]
+              summary: Deletes the session given a unizue session identifier
+              parameters:
+                - in: path
+                  name: id
+                  description: The identifier for the session
+                  required: true
+                  type: string
+              responses:
+                '204':
+                  description: Session successfully deleted
+                '404':
+                  description: Could not find session with the given identifier
+          /sessions/{id}/feedback:
+            get:
+              tags: ["Unimplemented"]
+              summary: Gets a list of all the feedback for a given session
+              parameters:
+                - in: path
+                  name: id
+                  description: The identifier for the session
+                  required: true
+                  type: string
+              responses:
+                '200':
+                  description: Feedback returned successfully
+                  schema:
+                    type: array
+                    items:
+                      $ref: '#/definitions/feedback'
+                '404':
+                  description: Could not find session with the given identifier
+            post:
+              tags: ["Unimplemented"]
+              summary: Posts a new piece of feedback for the session
+              consumes:
+                - application/json
+                - application/yaml
+              parameters:
+                - in: body
+                  name: feedback
+                  description: The new piece of feedback to be added to the session
+                  required: true
+                  schema:
+                    $ref: '#/definitions/feedback'
+                - in: path
+                  name: id
+                  description: The identifier for the session
+                  required: true
+                  type: string
+
+              responses:
+                '204':
+                  description: Feedback posted successfully
+                '404':
+                  description: Could not find session with the given identifier
+
+        definitions:
+          sessionCreationRequest:
+            type: object
+            properties:
+              name:
+                type: string
+              user:
+                type: string
+            required:
+              - name
+              - user
+          session:
+            type: object
+            properties:
+              id:
+                type: string
+              name:
+                type: string
+              user:
+                type: string
+              active:
+                type: boolean
+              timestamp:
+                type: integer
+              accessCode:
+                type: string
+            required:
+              - id
+              - name
+              - user
+              - active
+              - timestamp
+
+          error:
+            type: object
+            properties:
+              name:
+                type: string
+              description:
+                type: string
+            required:
+              - name
+              - description
+          feedback:
+            type: object
+            properties:
+              time:
+                type: integer
+              question:
+                type: string
+              value:
+                type: integer
+            required:
+              - time
+              - question
+              
