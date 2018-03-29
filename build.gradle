@@ -11,7 +11,8 @@ import jp.classmethod.aws.gradle.s3.CreateBucketTask;
 import jp.classmethod.aws.gradle.s3.SyncTask;
 
 plugins {
-  id "jp.classmethod.aws" version "0.30"
+  id "jp.classmethod.aws" version "0.37"
+  id "com.moowork.node" version "1.2.0"
 }
 
 aws {
@@ -41,3 +42,33 @@ task deployCloudformation(dependsOn: [
   awsCfnMigrateStackAndWaitCompleted
 ])
 
+task installReactDependencies(type: NpmTask){
+  args = ["install", "--prefix", "react"]
+}
+
+task buildReactProject(type: NpmTask, dependsOn: installReactDependencies){
+  args = ["run", "build", "--prefix", "react"]
+}
+
+task moveDistFolderToBucket(type: SyncTask, dependsOn: buildReactProject){
+  source file("react/dist")
+  bucketName "dot.hazelfire.org"
+  prefix "dist/"
+}
+
+task moveHtmlFolderToBucket(type: SyncTask, dependsOn: buildReactProject){
+  source file("react/html")
+  bucketName "dot.hazelfire.org"
+  prefix "html/"
+  acl "PublicRead"
+}
+
+task moveWebsiteToBuckets(dependsOn: [
+  moveDistFolderToBucket,
+  moveHtmlFolderToBucket
+])
+
+task fullBuild(dependsOn:[
+  deployCloudformation,
+  moveWebsiteToBuckets
+])
