@@ -13,6 +13,7 @@ import jp.classmethod.aws.gradle.s3.SyncTask;
 plugins {
   id "jp.classmethod.aws" version "0.37"
   id "com.moowork.node" version "1.2.0"
+  id "base"
 }
 
 aws {
@@ -32,12 +33,28 @@ cloudFormation{
   templateFile project.file('api/template.yaml')
   templateBucket "dotcollectordev-${aws.region}-${aws.accountId}"
   region "ap-southeast-2"
-  templateKeyPrefix 'template.yaml'
+  templateKeyPrefix 'template'
   stackName 'dotcollector'
+  capabilityIam true
+}
+
+task zipSource(type: Zip, group: "Archive"){
+  from "api/src"
+  into "/"
+  destinationDir file("build/bundle")
+  archiveName("lambda.zip")
+}
+
+task pushBundleToS3(type: SyncTask, dependsOn: [createDevBucket,zipSource]){
+  source file("build/bundle")
+  bucketName "dotcollectordev-${aws.region}-${aws.accountId}"
+  prefix "/bundle/"
+  
 }
 
 task deployCloudformation(dependsOn: [
   createDevBucket,
+  pushBundleToS3,
   awsCfnUploadTemplate,
   awsCfnMigrateStackAndWaitCompleted
 ])

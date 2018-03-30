@@ -8,10 +8,57 @@ Resources:
         IndexDocument: index.html
   Sessions:
     Type: AWS::S3::Bucket
+  GetSessionsLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Runtime: python3.6
+      Code:
+        S3Bucket:
+          !Join ["-", ["dotcollectordev", !Ref "AWS::Region", !Ref "AWS::AccountId"]]
+        S3Key: "bundle/lambda.zip"
+      Handler: sessions.get_sessions
+      Role:
+        Fn::GetAtt: ["LambdaExecutionRole", "Arn"]
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          Effect: Allow
+          Principal:
+            Service: lambda.amazonaws.com
+          Action: 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/AmazonS3FullAccess'
+  APIGatewayExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          Effect: Allow
+          Principal:
+            Service: apigateway.amazonaws.com
+          Action: 'sts:AssumeRole'
+  ExecuteLambdaPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: ExecuteDotColectorLambda
+      Roles:
+        - !Ref APIGatewayExecutionRole
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - 'lambda:InvokeFunction'
+            Resource:
+              - !GetAtt ["GetSessionsLambda", "Arn"]
   APIGateway:
     Type: AWS::ApiGateway::RestApi
     Properties:
-      Body: 
+      Body:
         swagger: "2.0"
         info:
           title: DotCollector
@@ -53,6 +100,15 @@ Resources:
                     type: array
                     items:
                       $ref: '#/definitions/session'
+              x-amazon-apigateway-integration:
+                type: AWS_PROXY
+                credentials: !GetAtt ["APIGatewayExecutionRole", "Arn"]
+                uri:
+                  !Join ["",["arn:aws:apigateway:", !Ref "AWS::Region", ":lambda:path/2015-03-31/functions/", !GetAtt ["GetSessionsLambda", "Arn"], "/invocations"]]
+                responses:
+                  default:
+                    statusCode: '200'
+                httpMethod: POST
           /sessionByAccessCode:
             get:
               tags: ["Unimplemented"]
@@ -204,4 +260,4 @@ Resources:
             required:
               - time
               - question
-              
+              - value
