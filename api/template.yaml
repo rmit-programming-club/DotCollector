@@ -19,6 +19,9 @@ Resources:
       Handler: sessions.get_sessions
       Role:
         Fn::GetAtt: ["LambdaExecutionRole", "Arn"]
+      Environment:
+        Variables:
+          BucketName: !Ref "Sessions"
   LambdaExecutionRole:
     Type: AWS::IAM::Role
     Properties:
