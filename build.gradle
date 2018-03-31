@@ -54,6 +54,7 @@ task moveDistFolderToBucket(type: SyncTask, dependsOn: buildReactProject){
   source file("react/dist")
   bucketName "dot.hazelfire.org"
   prefix "dist/"
+  acl "PublicRead"
 }
 
 task moveHtmlFolderToBucket(type: SyncTask, dependsOn: buildReactProject){
