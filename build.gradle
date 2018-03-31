@@ -36,6 +36,9 @@ cloudFormation{
   templateKeyPrefix 'template'
   stackName 'dotcollector'
   capabilityIam true
+  stackParams([
+    CodeVersion: '2G1ReNUvWRa3jiMWKMEsusg.e2J33zxR'
+  ])
 }
 
 task zipSource(type: Zip, group: "Archive"){
@@ -45,10 +48,10 @@ task zipSource(type: Zip, group: "Archive"){
   archiveName("lambda.zip")
 }
 
-task pushBundleToS3(type: SyncTask, dependsOn: [createDevBucket,zipSource]){
-  source file("build/bundle")
+task pushBundleToS3(type: AmazonS3FileUploadTask, dependsOn: [createDevBucket,zipSource]){
+  file file("build/bundle/lambda.zip")
   bucketName "dotcollectordev-${aws.region}-${aws.accountId}"
-  prefix "/bundle/"
+  key "/bundle/lambda.zip"
   
 }
 

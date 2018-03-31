@@ -1,3 +1,7 @@
+Parameters:
+  CodeVersion:
+    Type: String
+    Description: Version of the source code
 Resources:
   WebInterfaceBucket:
     Type: AWS::S3::Bucket
@@ -16,6 +20,7 @@ Resources:
         S3Bucket:
           !Join ["-", ["dotcollectordev", !Ref "AWS::Region", !Ref "AWS::AccountId"]]
         S3Key: "bundle/lambda.zip"
+        S3ObjectVersion: !Ref "CodeVersion"
       Handler: sessions.get_sessions
       Role:
         Fn::GetAtt: ["LambdaExecutionRole", "Arn"]
