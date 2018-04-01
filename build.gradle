@@ -8,6 +8,8 @@
 import com.amazonaws.services.s3.model.ObjectMetadata;
 
 import jp.classmethod.aws.gradle.s3.CreateBucketTask;
+import jp.classmethod.aws.gradle.s3.AmazonS3FileUploadTask;
+import jp.classmethod.aws.gradle.s3.AmazonS3PluginExtension;
 import jp.classmethod.aws.gradle.s3.SyncTask;
 
 plugins {
@@ -51,8 +53,13 @@ task zipSource(type: Zip, group: "Archive"){
 task pushBundleToS3(type: AmazonS3FileUploadTask, dependsOn: [createDevBucket,zipSource]){
   file file("build/bundle/lambda.zip")
   bucketName "dotcollectordev-${aws.region}-${aws.accountId}"
-  key "/bundle/lambda.zip"
-  
+  key "bundle/lambda.zip"
+  doLast {
+    println existingObjectMetadata().getVersionId()
+    cloudFormation.stackParams([
+      CodeVersion: existingObjectMetadata().getVersionId()
+    ])
+  }
 }
 
 task deployCloudformation(dependsOn: [
@@ -61,6 +68,9 @@ task deployCloudformation(dependsOn: [
   awsCfnUploadTemplate,
   awsCfnMigrateStackAndWaitCompleted
 ])
+
+awsCfnUploadTemplate.mustRunAfter(pushBundleToS3)
+awsCfnMigrateStackAndWaitCompleted.mustRunAfter(pushBundleToS3)
 
 task installReactDependencies(type: NpmTask){
   args = ["install", "--prefix", "react"]
