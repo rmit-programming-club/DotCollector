@@ -8,11 +8,14 @@
 import com.amazonaws.services.s3.model.ObjectMetadata;
 
 import jp.classmethod.aws.gradle.s3.CreateBucketTask;
+import jp.classmethod.aws.gradle.s3.AmazonS3FileUploadTask;
+import jp.classmethod.aws.gradle.s3.AmazonS3PluginExtension;
 import jp.classmethod.aws.gradle.s3.SyncTask;
 
 plugins {
   id "jp.classmethod.aws" version "0.37"
   id "com.moowork.node" version "1.2.0"
+  id "base"
 }
 
 aws {
@@ -32,15 +35,42 @@ cloudFormation{
   templateFile project.file('api/template.yaml')
   templateBucket "dotcollectordev-${aws.region}-${aws.accountId}"
   region "ap-southeast-2"
-  templateKeyPrefix 'template.yaml'
+  templateKeyPrefix 'template'
   stackName 'dotcollector'
+  capabilityIam true
+  stackParams([
+    CodeVersion: '2G1ReNUvWRa3jiMWKMEsusg.e2J33zxR'
+  ])
+}
+
+task zipSource(type: Zip, group: "Archive"){
+  from "api/src"
+  into "/"
+  destinationDir file("build/bundle")
+  archiveName("lambda.zip")
+}
+
+task pushBundleToS3(type: AmazonS3FileUploadTask, dependsOn: [createDevBucket,zipSource]){
+  file file("build/bundle/lambda.zip")
+  bucketName "dotcollectordev-${aws.region}-${aws.accountId}"
+  key "bundle/lambda.zip"
+  doLast {
+    println existingObjectMetadata().getVersionId()
+    cloudFormation.stackParams([
+      CodeVersion: existingObjectMetadata().getVersionId()
+    ])
+  }
 }
 
 task deployCloudformation(dependsOn: [
   createDevBucket,
+  pushBundleToS3,
   awsCfnUploadTemplate,
   awsCfnMigrateStackAndWaitCompleted
 ])
+
+awsCfnUploadTemplate.mustRunAfter(pushBundleToS3)
+awsCfnMigrateStackAndWaitCompleted.mustRunAfter(pushBundleToS3)
 
 task installReactDependencies(type: NpmTask){
   args = ["install", "--prefix", "react"]

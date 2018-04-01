@@ -8,3 +8,6 @@
 
 # Gradle
 /.gradle
+
+# Build folder
+/build

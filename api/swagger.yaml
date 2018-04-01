@@ -39,6 +39,13 @@ paths:
             type: array
             items:
               $ref: '#/definitions/session'
+      x-amazon-apigateway-integration:
+        type: aws
+        uri:
+          Fn::GetAtt: ["GetSessionsLambda", "Arn"]
+        responses:
+          default:
+            statusCode: '200'
   /sessionByAccessCode:
     get:
       tags: ["Unimplemented"]
