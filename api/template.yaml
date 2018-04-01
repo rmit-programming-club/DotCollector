@@ -1,3 +1,7 @@
+Parameters:
+  CodeVersion:
+    Type: String
+    Description: Version of the source code
 Resources:
   WebInterfaceBucket:
     Type: AWS::S3::Bucket
@@ -8,10 +12,61 @@ Resources:
         IndexDocument: index.html
   Sessions:
     Type: AWS::S3::Bucket
+  GetSessionsLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Runtime: python3.6
+      Code:
+        S3Bucket:
+          !Join ["-", ["dotcollectordev", !Ref "AWS::Region", !Ref "AWS::AccountId"]]
+        S3Key: "bundle/lambda.zip"
+        S3ObjectVersion: !Ref "CodeVersion"
+      Handler: sessions.get_sessions
+      Role:
+        Fn::GetAtt: ["LambdaExecutionRole", "Arn"]
+      Environment:
+        Variables:
+          BucketName: !Ref "Sessions"
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          Effect: Allow
+          Principal:
+            Service: lambda.amazonaws.com
+          Action: 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/AmazonS3FullAccess'
+  APIGatewayExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          Effect: Allow
+          Principal:
+            Service: apigateway.amazonaws.com
+          Action: 'sts:AssumeRole'
+  ExecuteLambdaPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: ExecuteDotColectorLambda
+      Roles:
+        - !Ref APIGatewayExecutionRole
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - 'lambda:InvokeFunction'
+            Resource:
+              - !GetAtt ["GetSessionsLambda", "Arn"]
   APIGateway:
     Type: AWS::ApiGateway::RestApi
     Properties:
-      Body: 
+      Body:
         swagger: "2.0"
         info:
           title: DotCollector
@@ -20,28 +75,28 @@ Resources:
 
         paths:
           /sessions:
-            post:
-              tags: ['Unimplemented']
-              summary: Creates a new session with the given parameters
-              consumes:
-                - application/json
-                - application/yaml
-              parameters:
-                - in: body
-                  name: Session creation information
-                  description: Outlines the parameters that the session will have
-                  required: true
-                  schema:
-                    $ref: '#/definitions/sessionCreationRequest'
-              responses:
-                '200':
-                  description: Session created successfully
-                  schema:
-                    $ref: '#/definitions/session'
-                '400':
-                  description: An error has occurred. The message will outline the error, but it is likely that the user does not exist
-                  schema:
-                    $ref: '#/definitions/error'
+          #            post:
+          #              tags: ['Unimplemented']
+          #              summary: Creates a new session with the given parameters
+          #              consumes:
+          #                - application/json
+          #                - application/yaml
+          #              parameters:
+          #                - in: body
+          #                  name: Session creation information
+          #                  description: Outlines the parameters that the session will have
+          #                  required: true
+          #                  schema:
+          #                    $ref: '#/definitions/sessionCreationRequest'
+          #              responses:
+          #                '200':
+          #                  description: Session created successfully
+          #                  schema:
+          #                    $ref: '#/definitions/session'
+          #                '400':
+          #                  description: An error has occurred. The message will outline the error, but it is likely that the user does not exist
+          #                  schema:
+          #                    $ref: '#/definitions/error'
             get:
               tags: ["Unimplemented"]
               summary: Returns all the sessions that have been created by a specific user
@@ -53,102 +108,110 @@ Resources:
                     type: array
                     items:
                       $ref: '#/definitions/session'
-          /sessionByAccessCode:
-            get:
-              tags: ["Unimplemented"]
-              summary: Gets a session given an access code
-              parameters:
-                - in: query
-                  name: code
-                  description: Access code for the wanted session
-                  required: true
-                  type: string
-              responses:
-                '200':
-                  description: Session return successfully
-                  schema:
-                    $ref: '#/definitions/session'
-                '404':
-                  description: Could not find session with given code
-                  schema:
-                    $ref: '#/definitions/error'
-          /sessions/{id}:
-            get:
-              tags: ["Unimplemented"]
-              summary: Gets the session details given a unique session identifier
-              parameters:
-                - in: path
-                  name: id
-                  description: The identifier for the session
-                  required: true
-                  type: string
-              responses:
-                '200':
-                  description: Session returned successfully
-                  schema:
-                    $ref: '#/definitions/session'
-                '404':
-                  description: Could not find session with the given identifier
-                  schema:
-                    $ref: '#/definitions/error'
-            delete:
-              tags: ["Unimplemented"]
-              summary: Deletes the session given a unizue session identifier
-              parameters:
-                - in: path
-                  name: id
-                  description: The identifier for the session
-                  required: true
-                  type: string
-              responses:
-                '204':
-                  description: Session successfully deleted
-                '404':
-                  description: Could not find session with the given identifier
-          /sessions/{id}/feedback:
-            get:
-              tags: ["Unimplemented"]
-              summary: Gets a list of all the feedback for a given session
-              parameters:
-                - in: path
-                  name: id
-                  description: The identifier for the session
-                  required: true
-                  type: string
-              responses:
-                '200':
-                  description: Feedback returned successfully
-                  schema:
-                    type: array
-                    items:
-                      $ref: '#/definitions/feedback'
-                '404':
-                  description: Could not find session with the given identifier
-            post:
-              tags: ["Unimplemented"]
-              summary: Posts a new piece of feedback for the session
-              consumes:
-                - application/json
-                - application/yaml
-              parameters:
-                - in: body
-                  name: feedback
-                  description: The new piece of feedback to be added to the session
-                  required: true
-                  schema:
-                    $ref: '#/definitions/feedback'
-                - in: path
-                  name: id
-                  description: The identifier for the session
-                  required: true
-                  type: string
-
-              responses:
-                '204':
-                  description: Feedback posted successfully
-                '404':
-                  description: Could not find session with the given identifier
-
+              x-amazon-apigateway-integration:
+                type: AWS_PROXY
+                credentials: !GetAtt ["APIGatewayExecutionRole", "Arn"]
+                uri:
+                  !Join ["",["arn:aws:apigateway:", !Ref "AWS::Region", ":lambda:path/2015-03-31/functions/", !GetAtt ["GetSessionsLambda", "Arn"], "/invocations"]]
+                responses:
+                  default:
+                    statusCode: '200'
+                httpMethod: POST
+                #          /sessionByAccessCode:
+                #            get:
+                #              tags: ["Unimplemented"]
+                #              summary: Gets a session given an access code
+                #              parameters:
+                #                - in: query
+                #                  name: code
+                #                  description: Access code for the wanted session
+                #                  required: true
+                #                  type: string
+                #              responses:
+                #                '200':
+                #                  description: Session return successfully
+                #                  schema:
+                #                    $ref: '#/definitions/session'
+                #                '404':
+                #                  description: Could not find session with given code
+                #                  schema:
+                #                    $ref: '#/definitions/error'
+                #          /sessions/{id}:
+                #            get:
+                #              tags: ["Unimplemented"]
+                #              summary: Gets the session details given a unique session identifier
+                #              parameters:
+                #                - in: path
+                #                  name: id
+                #                  description: The identifier for the session
+                #                  required: true
+                #                  type: string
+                #              responses:
+                #                '200':
+                #                  description: Session returned successfully
+                #                  schema:
+                #                    $ref: '#/definitions/session'
+                #                '404':
+                #                  description: Could not find session with the given identifier
+                #                  schema:
+                #                    $ref: '#/definitions/error'
+                #            delete:
+                #              tags: ["Unimplemented"]
+                #              summary: Deletes the session given a unizue session identifier
+                #              parameters:
+                #                - in: path
+                #                  name: id
+                #                  description: The identifier for the session
+                #                  required: true
+                #                  type: string
+                #              responses:
+                #                '204':
+                #                  description: Session successfully deleted
+                #                '404':
+                #                  description: Could not find session with the given identifier
+                #          /sessions/{id}/feedback:
+                #            get:
+                #              tags: ["Unimplemented"]
+                #              summary: Gets a list of all the feedback for a given session
+                #              parameters:
+                #                - in: path
+                #                  name: id
+                #                  description: The identifier for the session
+                #                  required: true
+                #                  type: string
+                #              responses:
+                #                '200':
+                #                  description: Feedback returned successfully
+                #                  schema:
+                #                    type: array
+                #                    items:
+                #                      $ref: '#/definitions/feedback'
+                #                '404':
+                #                  description: Could not find session with the given identifier
+                #            post:
+                #              tags: ["Unimplemented"]
+                #              summary: Posts a new piece of feedback for the session
+                #              consumes:
+                #                - application/json
+                #                - application/yaml
+                #              parameters:
+                #                - in: body
+                #                  name: feedback
+                #                  description: The new piece of feedback to be added to the session
+                #                  required: true
+                #                  schema:
+                #                    $ref: '#/definitions/feedback'
+                #                - in: path
+                #                  name: id
+                #                  description: The identifier for the session
+                #                  required: true
+                #                  type: string
+                #
+                #              responses:
+                #                '204':
+                #                  description: Feedback posted successfully
+                #                '404':
+                #                  description: Could not find session with the given identifier
         definitions:
           sessionCreationRequest:
             type: object
@@ -204,4 +267,9 @@ Resources:
             required:
               - time
               - question
-              
+              - value
+  APIGatewayDeployment:
+    Type: AWS::ApiGateway::Deployment
+    Properties:
+      RestApiId: !Ref APIGateway
+      StageName: "dev"
