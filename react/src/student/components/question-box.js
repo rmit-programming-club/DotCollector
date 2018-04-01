@@ -3,29 +3,32 @@ import React from 'react';
 import {Button, Card, Container, Grid} from 'semantic-ui-react';
 
 const QuestionBox = (props) => {
-    const {title, min, max} = props.question;
+    const {isMobile, question} = props;
+    const {title, min, max} = question;
+
+    console.log(isMobile);
+    const buttons = isMobile ? (
+        <p>// TODO implement mobile buttons</p>
+    ) : (
+        <Container className="ui 5 buttons" textAlign="center">
+            <Button basic color="red" className="basic-red-button">{min}</Button>
+            <Button basic color="red" className="basic-red-button">2</Button>
+            <Button basic color="red" className="basic-red-button">3</Button>
+            <Button basic color="red" className="basic-red-button">Just Right.</Button>
+            <Button basic color="red" className="basic-red-button">5</Button>
+            <Button basic color="red" className="basic-red-button">6</Button>
+            <Button basic color="red" className="basic-red-button">{max}</Button>
+        </Container>
+    );
+
     return (
         <div style={{padding: "10px"}}>
-            <Card>
+            <Card fluid>
                 <Card.Content>
                     <Card.Header>{title}</Card.Header>
                 </Card.Content>
                 <Card.Content>
-                    <Grid columns={2}>
-                        <Grid.Column>
-                            <Container textAlign="left">{min}</Container>
-                        </Grid.Column>
-                        <Grid.Column>
-                            <Container textAlign="right">{max}</Container>
-                        </Grid.Column>
-                    </Grid>
-                    <Container className="ui 5 buttons" textAlign="center">
-                        <Button color="green" basic className="basic-red-button">1</Button>
-                        <Button color="green" basic className="basic-red-button">2</Button>
-                        <Button color="green" basic className="basic-red-button">3</Button>
-                        <Button color="green" basic className="basic-red-button">4</Button>
-                        <Button color="green" basic className="basic-red-button">5</Button>
-                    </Container>
+                    {buttons}
                 </Card.Content>
             </Card>
         </div>
