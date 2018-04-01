@@ -140,6 +140,36 @@ Resources:
                   default:
                     statusCode: '200'
                 httpMethod: POST
+            options:
+              consumes:
+              - application/json
+              produces:
+              - application/json
+              responses:
+                '200':
+                  description: 200 response
+                  schema:
+                    type: Object
+                    title: Empty Object
+                  headers:
+                    Access-Control-Allow-Origin:
+                      type: string
+                    Access-Control-Allow-Methods:
+                      type: string
+                    Access-Control-Allow-Headers:
+                      type: string
+              x-amazon-apigateway-integration:
+                responses:
+                  default:
+                    statusCode: 200
+                    responseParameters:
+                      method.response.header.Access-Control-Allow-Methods: "'GET,OPTIONS,POST'"
+                      method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token'"
+                      method.response.header.Access-Control-Allow-Origin: "'*'"
+                passthroughBehavior: when_no_match
+                requestTemplates:
+                  application/json: "{\"statusCode\": 200}"
+                type: mock
                 #          /sessionByAccessCode:
                 #            get:
                 #              tags: ["Unimplemented"]
@@ -291,6 +321,22 @@ Resources:
               - time
               - question
               - value
+          defaultCORSresponse:
+            responses:
+              default:
+                headers:
+                  Access-Control-Allow-Origin:
+                    type: string
+                  Access-Control-Allow-Credentials:
+                    type: boolean
+                  Access-Control-Allow-Headers:
+                    type: array
+                    collectionFormat: csv
+                  Access-Control-Allow-Methods:
+                    type: array
+                    collectionFormat: csv
+                  Access-Control-Max-Age:
+                    type: integer
   APIGatewayDeployment:
     Type: AWS::ApiGateway::Deployment
     Properties:
