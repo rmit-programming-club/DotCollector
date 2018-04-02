@@ -7,6 +7,9 @@ import {Header, Image} from 'semantic-ui-react';
 import DotLogo from '../../../resources/dotlogo.png';
 import '../css/sass/index.sass';
 
+import HeaderBar from './components/header'
+import SessionListing from './components/sessions'
+
 
 class Teacher extends Component {
     constructor(props) {
@@ -18,9 +21,9 @@ class Teacher extends Component {
     render() {
         /* TODO make local styles into classes. */
         return (
-            <div className={"trial"}>
-                <Image src={DotLogo} style={{display: "block", margin: "0 auto"}}/>
-                <Header size="huge" className={"primary-text"} style={{"font-size": "4em"}}>Dot Collector</Header>
+            <div className={"teacher-background"}>
+              <HeaderBar />
+              <SessionListing />
             </div>
         )
     }
