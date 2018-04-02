@@ -14,21 +14,30 @@ def get_sessions(event, context):
     sessionsFile = s3.Object(bucketName, "sessions.yaml")
     try:
         content = sessionsFile.get()['Body'].read().decode('utf-8')
-        if event["headers"] and 'Content-Type' in event["headers"] and event["headers"]["Content-Type"] == "application/json":
+        if event["headers"] and 'Content-Type' in event["headers"] and event["headers"]["Content-Type"] == "application/yaml":
+            return {
+                "statusCode": "200",
+                "headers": {
+                    "Access-Control-Allow-Origin": "*"
+                },
+                "body": content
+            }      
+        else:
             jsonContent = json.dumps(yaml.load(content))
             return {
                 "statusCode": "200",
+                "headers": {
+                    "Access-Control-Allow-Origin": "*"
+                },
                 "body": jsonContent
             }
-        else:
-            return {
-                "statusCode": "200",
-                "body": content
-            }      
     except botocore.exceptions.ClientError as e:
         if e.response['Error']['Code'] == "NoSuchKey":
             return {
                 "statusCode": "200",
+                "headers": {
+                    "Access-Control-Allow-Origin": "*"
+                },
                 "body": "[]"
             }
         else:
@@ -66,6 +75,9 @@ def post_sessions(event, context):
 
         return {
             "statusCode": "400",
+            "headers": {
+                "Access-Control-Allow-Origin": "*"
+            },
             "body": json.dumps(body)
         }
     collatedSessions = []
@@ -81,5 +93,8 @@ def post_sessions(event, context):
     sessionsFile.put(Body= encodedSessions)
     return {
             "statusCode": '200',
+            "headers": {
+                "Access-Control-Allow-Origin": "*"
+            },
             "body": json.dumps(newSession)
     }
