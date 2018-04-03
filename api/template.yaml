@@ -27,6 +27,21 @@ Resources:
       Environment:
         Variables:
           BucketName: !Ref "Sessions"
+  PostSessionLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Runtime: python3.6
+      Code:
+        S3Bucket:
+          !Join ["-", ["dotcollectordev", !Ref "AWS::Region", !Ref "AWS::AccountId"]]
+        S3Key: "bundle/lambda.zip"
+        S3ObjectVersion: !Ref "CodeVersion"
+      Handler: sessions.post_sessions
+      Role:
+        Fn::GetAtt: ["LambdaExecutionRole", "Arn"]
+      Environment:
+        Variables:
+          BucketName: !Ref "Sessions"
   LambdaExecutionRole:
     Type: AWS::IAM::Role
     Properties:
@@ -63,6 +78,7 @@ Resources:
               - 'lambda:InvokeFunction'
             Resource:
               - !GetAtt ["GetSessionsLambda", "Arn"]
+              - !GetAtt ["PostSessionLambda", "Arn"]
   APIGateway:
     Type: AWS::ApiGateway::RestApi
     Properties:
@@ -75,30 +91,37 @@ Resources:
 
         paths:
           /sessions:
-          #            post:
-          #              tags: ['Unimplemented']
-          #              summary: Creates a new session with the given parameters
-          #              consumes:
-          #                - application/json
-          #                - application/yaml
-          #              parameters:
-          #                - in: body
-          #                  name: Session creation information
-          #                  description: Outlines the parameters that the session will have
-          #                  required: true
-          #                  schema:
-          #                    $ref: '#/definitions/sessionCreationRequest'
-          #              responses:
-          #                '200':
-          #                  description: Session created successfully
-          #                  schema:
-          #                    $ref: '#/definitions/session'
-          #                '400':
-          #                  description: An error has occurred. The message will outline the error, but it is likely that the user does not exist
-          #                  schema:
-          #                    $ref: '#/definitions/error'
+            post:
+              summary: Creates a new session with the given parameters
+              consumes:
+                - application/json
+                - application/yaml
+              parameters:
+                - in: body
+                  name: Session creation information
+                  description: Outlines the parameters that the session will have
+                  required: true
+                  schema:
+                    $ref: '#/definitions/sessionCreationRequest'
+              responses:
+                '200':
+                  description: Session created successfully
+                  schema:
+                    $ref: '#/definitions/session'
+                '400':
+                  description: An error has occurred. The message will outline the error, but it is likely that the body is invalid does not exist
+                  schema:
+                    $ref: '#/definitions/error'
+              x-amazon-apigateway-integration:
+                type: AWS_PROXY
+                credentials: !GetAtt ["APIGatewayExecutionRole", "Arn"]
+                uri:
+                  !Join ["",["arn:aws:apigateway:", !Ref "AWS::Region", ":lambda:path/2015-03-31/functions/", !GetAtt ["PostSessionLambda", "Arn"], "/invocations"]]
+                responses:
+                  default:
+                    statusCode: '200'
+                httpMethod: POST
             get:
-              tags: ["Unimplemented"]
               summary: Returns all the sessions that have been created by a specific user
               description: Returns an array with details of all the sessions that have been created by a user
               responses:
@@ -117,6 +140,36 @@ Resources:
                   default:
                     statusCode: '200'
                 httpMethod: POST
+            options:
+              consumes:
+              - application/json
+              produces:
+              - application/json
+              responses:
+                '200':
+                  description: 200 response
+                  schema:
+                    type: Object
+                    title: Empty Object
+                  headers:
+                    Access-Control-Allow-Origin:
+                      type: string
+                    Access-Control-Allow-Methods:
+                      type: string
+                    Access-Control-Allow-Headers:
+                      type: string
+              x-amazon-apigateway-integration:
+                responses:
+                  default:
+                    statusCode: 200
+                    responseParameters:
+                      method.response.header.Access-Control-Allow-Methods: "'GET,OPTIONS,POST'"
+                      method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token'"
+                      method.response.header.Access-Control-Allow-Origin: "'*'"
+                passthroughBehavior: when_no_match
+                requestTemplates:
+                  application/json: "{\"statusCode\": 200}"
+                type: mock
                 #          /sessionByAccessCode:
                 #            get:
                 #              tags: ["Unimplemented"]
@@ -268,6 +321,22 @@ Resources:
               - time
               - question
               - value
+          defaultCORSresponse:
+            responses:
+              default:
+                headers:
+                  Access-Control-Allow-Origin:
+                    type: string
+                  Access-Control-Allow-Credentials:
+                    type: boolean
+                  Access-Control-Allow-Headers:
+                    type: array
+                    collectionFormat: csv
+                  Access-Control-Allow-Methods:
+                    type: array
+                    collectionFormat: csv
+                  Access-Control-Max-Age:
+                    type: integer
   APIGatewayDeployment:
     Type: AWS::ApiGateway::Deployment
     Properties:

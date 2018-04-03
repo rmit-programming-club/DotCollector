@@ -8,7 +8,7 @@ module.exports = {
     },
     output: {
         path: path.resolve(__dirname, 'dist'),
-        publicPath: "dist",
+      //      publicPath: "dist/",
         filename: "[name]-bundle.js"
     },
     devtool: "source-map",
@@ -16,7 +16,7 @@ module.exports = {
         proxy: { // proxy URLs to backend development server
             '/api': 'http://localhost:3000'
         },
-        contentBase: './html',
+  //        contentBase: 'html/',
         hot: false, // hot module replacement. Depends on HotModuleReplacementPlugin
         https: false, // true for self-signed, object for cert authority
         noInfo: true // only errors & warns on hot reload
@@ -40,7 +40,7 @@ module.exports = {
                 use: {
                     loader: "file-loader",
                     options: {
-                        name: "resources/images/[name].[ext]"
+                        name: "resources/[name].[ext]"
                     }
                 }
             }, {
@@ -54,7 +54,7 @@ module.exports = {
                 use: {
                     loader: "file-loader",
                     options: {
-                        name: "resources/fonts/[name].[ext]"
+                        name: "/../../dist/resources/fonts/[name].[ext]"
                     }
                 }
             }

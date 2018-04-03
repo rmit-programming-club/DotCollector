@@ -7,7 +7,7 @@ import 'semantic-ui-css/semantic.min.css';
 import '../css/sass/index.sass';
 import {Header, Image} from 'semantic-ui-react';
 
-import DotLogo from '../../../resources/dotlogo.png';
+import DotLogo from '../../html/resources/dotlogo.png';
 
 
 class Student extends Component {

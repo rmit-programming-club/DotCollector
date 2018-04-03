@@ -2,27 +2,44 @@ import React, {Component} from "react";
 import ReactDOM from 'react-dom';
 
 import 'semantic-ui-css/semantic.min.css';
-import {Header, Image} from 'semantic-ui-react';
+import {Button, Header, Image} from 'semantic-ui-react';
 
-import DotLogo from '../../../resources/dotlogo.png';
+import DotLogo from '../../html/resources/dotlogo.png';
 import '../css/sass/index.sass';
+
+import HeaderBar from './components/header'
+import SessionListing from './components/sessions'
+import CreateSessionModal from './components/createsessionmodal'
 
 
 class Teacher extends Component {
     constructor(props) {
         super(props);
         this.state = {
+          modalOpen: false
         }
+
+        this.newSession = this.newSession.bind(this)
+        this.openSessionDialogue = this.openSessionDialogue.bind(this)
     }
 
     render() {
-        /* TODO make local styles into classes. */
         return (
-            <div className={"trial"}>
-                <Image src={DotLogo} style={{display: "block", margin: "0 auto"}}/>
-                <Header size="huge" className={"primary-text"} style={{"font-size": "4em"}}>Dot Collector</Header>
+            <div className={"teacher-background"}>
+              <HeaderBar />
+              <Button onClick={this.openSessionDialogue}>New Session</Button>
+              <CreateSessionModal onSubmit={this.newSession} isOpen={this.state.modalOpen}/>
+              <SessionListing />
             </div>
         )
+    }
+
+    newSession(name){
+        console.log(name);
+        this.setState({modalOpen: false});
+    }
+    openSessionDialogue(e){
+        this.setState({modalOpen: true});
     }
 }
 ReactDOM.render(

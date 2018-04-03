@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {Grid, Container, Image} from 'semantic-ui-react';
 
-import Dotlogo from '../../../../resources/dotlogo.png'
+import Dotlogo from '../../../html/resources/dotlogo.png'
 import Question from '../components/question-box';
 
 const QUESTIONS = [
