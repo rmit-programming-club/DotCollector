@@ -16,7 +16,7 @@ module.exports = {
         proxy: { // proxy URLs to backend development server
             '/api': 'http://localhost:3000'
         },
-//        contentBase: 'html/',
+  //        contentBase: 'html/',
         hot: false, // hot module replacement. Depends on HotModuleReplacementPlugin
         https: false, // true for self-signed, object for cert authority
         noInfo: true // only errors & warns on hot reload

@@ -1,20 +1,33 @@
 import React, {Component} from 'react';
 import {Header, Button} from 'semantic-ui-react';
-import Modal from 'react-model';
+import Modal from 'react-modal';
 
 const sessionsEndpoint = 'https://api.dot.hazelfire.org/sessions'
+
+const customStyles = {
+  content : {
+    top: '50%',
+    left: '50%',
+    right: 'auto',
+    bottom: 'auto',
+    marginRight: '-50%',
+    transform: 'translate(-50%, -50%)',
+    "text-align": 'center'
+  }
+};
 
 export default class CreateSessionModal extends Component{
     constructor(props){
         super(props);
         this.state = {
-          modalIsOpen: false
+          inputName: ''
         };
+
         this.openModal = this.openModal.bind(this);
         this.afterOpenModal = this.afterOpenModal.bind(this);
         this.closeModal = this.closeModal.bind(this);
+        this.updateInputValue = this.updateInputValue.bind(this);
         
-        this.inputRef = React.createRef();
     }
 
     openModal() {
@@ -26,26 +39,29 @@ export default class CreateSessionModal extends Component{
     }
 
     closeModal() {
-        this.setState({modalIsOpen: false});
+      this.props.onSubmit(this.state.inputName)
     }
 
     render() {
         return (
           <Modal
-            isOpen={this.state.modalIsOpen}
+            isOpen={this.props.isOpen}
             onAfterOpen={this.afterOpenModal}
             onRequestClose={this.closeModal}
             style={customStyles}
-            contentLabel="Example Modal"
+            contentLabel="Create Session Modal"
           >
             <h2>What is the name of your session?</h2>
-            <input ref={this.inputRef} type="text" autofocus="autofocus" />
-            <Button onclick={closeModal}>Create</Button>
+            <input onChange={this.updateInputValue} type="text" autofocus="autofocus" />
+            <b />
+            <Button onClick={this.closeModal}>Create</Button>
           </Modal>
           );
     }
 
-    getInputtedText(){
-      return this.inputRef.current.value;
+    updateInputValue(evt){
+      this.setState({
+        inputName: evt.target.value
+      });
     }
 }
