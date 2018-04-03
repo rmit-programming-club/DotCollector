@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {Menu, Header, Item, Image} from 'semantic-ui-react';
 
-import DotLogo from '../../../../resources/dotlogo.png'
+import DotLogo from '../../../html/resources/dotlogo.png'
 
 export default class HeaderBar extends Component{
     constructor(props){
