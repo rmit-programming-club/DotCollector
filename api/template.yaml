@@ -42,6 +42,66 @@ Resources:
       Environment:
         Variables:
           BucketName: !Ref "Sessions"
+  GetSessionByIdLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Runtime: python3.6
+      Code:
+        S3Bucket:
+          !Join ["-", ["dotcollectordev", !Ref "AWS::Region", !Ref "AWS::AccountId"]]
+        S3Key: "bundle/lambda.zip"
+        S3ObjectVersion: !Ref "CodeVersion"
+      Handler: sessions.get_session_by_id
+      Role:
+        Fn::GetAtt: ["LambdaExecutionRole", "Arn"]
+      Environment:
+        Variables:
+          BucketName: !Ref "Sessions"
+  GetSessionByCodeLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Runtime: python3.6
+      Code:
+        S3Bucket:
+          !Join ["-", ["dotcollectordev", !Ref "AWS::Region", !Ref "AWS::AccountId"]]
+        S3Key: "bundle/lambda.zip"
+        S3ObjectVersion: !Ref "CodeVersion"
+      Handler: sessions.get_session_by_code
+      Role:
+        Fn::GetAtt: ["LambdaExecutionRole", "Arn"]
+      Environment:
+        Variables:
+          BucketName: !Ref "Sessions"
+  GetFeedbackLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Runtime: python3.6
+      Code:
+        S3Bucket:
+          !Join ["-", ["dotcollectordev", !Ref "AWS::Region", !Ref "AWS::AccountId"]]
+        S3Key: "bundle/lambda.zip"
+        S3ObjectVersion: !Ref "CodeVersion"
+      Handler: feedback.get_feedback
+      Role:
+        Fn::GetAtt: ["LambdaExecutionRole", "Arn"]
+      Environment:
+        Variables:
+          BucketName: !Ref "Sessions"
+  PostFeedbackLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Runtime: python3.6
+      Code:
+        S3Bucket:
+          !Join ["-", ["dotcollectordev", !Ref "AWS::Region", !Ref "AWS::AccountId"]]
+        S3Key: "bundle/lambda.zip"
+        S3ObjectVersion: !Ref "CodeVersion"
+      Handler: feedback.post_feedback
+      Role:
+        Fn::GetAtt: ["LambdaExecutionRole", "Arn"]
+      Environment:
+        Variables:
+          BucketName: !Ref "Sessions"
   LambdaExecutionRole:
     Type: AWS::IAM::Role
     Properties:
@@ -79,6 +139,10 @@ Resources:
             Resource:
               - !GetAtt ["GetSessionsLambda", "Arn"]
               - !GetAtt ["PostSessionLambda", "Arn"]
+              - !GetAtt ["GetSessionByIdLambda", "Arn"]
+              - !GetAtt ["GetSessionByCodeLambda", "Arn"]
+              - !GetAtt ["GetFeedbackLambda", "Arn"]
+              - !GetAtt ["PostFeedbackLambda", "Arn"]
   APIGateway:
     Type: AWS::ApiGateway::RestApi
     Properties:
@@ -170,44 +234,120 @@ Resources:
                 requestTemplates:
                   application/json: "{\"statusCode\": 200}"
                 type: mock
-                #          /sessionByAccessCode:
-                #            get:
-                #              tags: ["Unimplemented"]
-                #              summary: Gets a session given an access code
-                #              parameters:
-                #                - in: query
-                #                  name: code
-                #                  description: Access code for the wanted session
-                #                  required: true
-                #                  type: string
-                #              responses:
-                #                '200':
-                #                  description: Session return successfully
-                #                  schema:
-                #                    $ref: '#/definitions/session'
-                #                '404':
-                #                  description: Could not find session with given code
-                #                  schema:
-                #                    $ref: '#/definitions/error'
-                #          /sessions/{id}:
-                #            get:
-                #              tags: ["Unimplemented"]
-                #              summary: Gets the session details given a unique session identifier
-                #              parameters:
-                #                - in: path
-                #                  name: id
-                #                  description: The identifier for the session
-                #                  required: true
-                #                  type: string
-                #              responses:
-                #                '200':
-                #                  description: Session returned successfully
-                #                  schema:
-                #                    $ref: '#/definitions/session'
-                #                '404':
-                #                  description: Could not find session with the given identifier
-                #                  schema:
-                #                    $ref: '#/definitions/error'
+          /sessionByAccessCode:
+            get:
+              summary: Gets a session given an access code
+              parameters:
+                - in: query
+                  name: code
+                  description: Access code for the wanted session
+                  required: true
+                  type: string
+              responses:
+                '200':
+                  description: Session return successfully
+                  schema:
+                    $ref: '#/definitions/session'
+                '404':
+                  description: Could not find session with given code
+                  schema:
+                    $ref: '#/definitions/error'
+              x-amazon-apigateway-integration:
+                type: AWS_PROXY
+                credentials: !GetAtt ["APIGatewayExecutionRole", "Arn"]
+                uri:
+                  !Join ["",["arn:aws:apigateway:", !Ref "AWS::Region", ":lambda:path/2015-03-31/functions/", !GetAtt ["GetSessionByCodeLambda", "Arn"], "/invocations"]]
+                responses:
+                  default:
+                    statusCode: '200'
+                httpMethod: POST
+            options:
+              consumes:
+              - application/json
+              produces:
+              - application/json
+              responses:
+                '200':
+                  description: 200 response
+                  schema:
+                    type: Object
+                    title: Empty Object
+                  headers:
+                    Access-Control-Allow-Origin:
+                      type: string
+                    Access-Control-Allow-Methods:
+                      type: string
+                    Access-Control-Allow-Headers:
+                      type: string
+              x-amazon-apigateway-integration:
+                responses:
+                  default:
+                    statusCode: 200
+                    responseParameters:
+                      method.response.header.Access-Control-Allow-Methods: "'GET,OPTIONS,POST'"
+                      method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token'"
+                      method.response.header.Access-Control-Allow-Origin: "'*'"
+                passthroughBehavior: when_no_match
+                requestTemplates:
+                  application/json: "{\"statusCode\": 200}"
+                type: mock
+          /sessions/{id}:
+            get:
+              summary: Gets the session details given a unique session identifier
+              parameters:
+                - in: path
+                  name: id
+                  description: The identifier for the session
+                  required: true
+                  type: string
+              responses:
+                '200':
+                  description: Session returned successfully
+                  schema:
+                    $ref: '#/definitions/session'
+                '404':
+                  description: Could not find session with the given identifier
+                  schema:
+                    $ref: '#/definitions/error'
+              x-amazon-apigateway-integration:
+                type: AWS_PROXY
+                credentials: !GetAtt ["APIGatewayExecutionRole", "Arn"]
+                uri:
+                  !Join ["",["arn:aws:apigateway:", !Ref "AWS::Region", ":lambda:path/2015-03-31/functions/", !GetAtt ["GetSessionByIdLambda", "Arn"], "/invocations"]]
+                responses:
+                  default:
+                    statusCode: '200'
+                httpMethod: POST
+            options:
+              consumes:
+              - application/json
+              produces:
+              - application/json
+              responses:
+                '200':
+                  description: 200 response
+                  schema:
+                    type: Object
+                    title: Empty Object
+                  headers:
+                    Access-Control-Allow-Origin:
+                      type: string
+                    Access-Control-Allow-Methods:
+                      type: string
+                    Access-Control-Allow-Headers:
+                      type: string
+              x-amazon-apigateway-integration:
+                responses:
+                  default:
+                    statusCode: 200
+                    responseParameters:
+                      method.response.header.Access-Control-Allow-Methods: "'GET,OPTIONS,POST'"
+                      method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token'"
+                      method.response.header.Access-Control-Allow-Origin: "'*'"
+                passthroughBehavior: when_no_match
+                requestTemplates:
+                  application/json: "{\"statusCode\": 200}"
+                type: mock
                 #            delete:
                 #              tags: ["Unimplemented"]
                 #              summary: Deletes the session given a unizue session identifier
@@ -222,49 +362,95 @@ Resources:
                 #                  description: Session successfully deleted
                 #                '404':
                 #                  description: Could not find session with the given identifier
-                #          /sessions/{id}/feedback:
-                #            get:
-                #              tags: ["Unimplemented"]
-                #              summary: Gets a list of all the feedback for a given session
-                #              parameters:
-                #                - in: path
-                #                  name: id
-                #                  description: The identifier for the session
-                #                  required: true
-                #                  type: string
-                #              responses:
-                #                '200':
-                #                  description: Feedback returned successfully
-                #                  schema:
-                #                    type: array
-                #                    items:
-                #                      $ref: '#/definitions/feedback'
-                #                '404':
-                #                  description: Could not find session with the given identifier
-                #            post:
-                #              tags: ["Unimplemented"]
-                #              summary: Posts a new piece of feedback for the session
-                #              consumes:
-                #                - application/json
-                #                - application/yaml
-                #              parameters:
-                #                - in: body
-                #                  name: feedback
-                #                  description: The new piece of feedback to be added to the session
-                #                  required: true
-                #                  schema:
-                #                    $ref: '#/definitions/feedback'
-                #                - in: path
-                #                  name: id
-                #                  description: The identifier for the session
-                #                  required: true
-                #                  type: string
-                #
-                #              responses:
-                #                '204':
-                #                  description: Feedback posted successfully
-                #                '404':
-                #                  description: Could not find session with the given identifier
+          /sessions/{id}/feedback:
+            get:
+              summary: Gets a list of all the feedback for a given session
+              parameters:
+                - in: path
+                  name: id
+                  description: The identifier for the session
+                  required: true
+                  type: string
+              responses:
+                '200':
+                  description: Feedback returned successfully
+                  schema:
+                    type: array
+                    items:
+                      $ref: '#/definitions/feedback'
+                '404':
+                  description: Could not find session with the given identifier
+              x-amazon-apigateway-integration:
+                type: AWS_PROXY
+                credentials: !GetAtt ["APIGatewayExecutionRole", "Arn"]
+                uri:
+                  !Join ["",["arn:aws:apigateway:", !Ref "AWS::Region", ":lambda:path/2015-03-31/functions/", !GetAtt ["GetFeedbackLambda", "Arn"], "/invocations"]]
+                responses:
+                  default:
+                    statusCode: '200'
+                httpMethod: POST
+            post:
+              summary: Posts a new piece of feedback for the session
+              consumes:
+                - application/json
+                - application/yaml
+              parameters:
+                - in: body
+                  name: feedback
+                  description: The new piece of feedback to be added to the session
+                  required: true
+                  schema:
+                    $ref: '#/definitions/feedback'
+                - in: path
+                  name: id
+                  description: The identifier for the session
+                  required: true
+                  type: string
+
+              responses:
+                '204':
+                  description: Feedback posted successfully
+                '404':
+                  description: Could not find session with the given identifier
+              x-amazon-apigateway-integration:
+                type: AWS_PROXY
+                credentials: !GetAtt ["APIGatewayExecutionRole", "Arn"]
+                uri:
+                  !Join ["",["arn:aws:apigateway:", !Ref "AWS::Region", ":lambda:path/2015-03-31/functions/", !GetAtt ["PostFeedbackLambda", "Arn"], "/invocations"]]
+                responses:
+                  default:
+                    statusCode: '200'
+                httpMethod: POST
+            options:
+              consumes:
+              - application/json
+              produces:
+              - application/json
+              responses:
+                '200':
+                  description: 200 response
+                  schema:
+                    type: Object
+                    title: Empty Object
+                  headers:
+                    Access-Control-Allow-Origin:
+                      type: string
+                    Access-Control-Allow-Methods:
+                      type: string
+                    Access-Control-Allow-Headers:
+                      type: string
+              x-amazon-apigateway-integration:
+                responses:
+                  default:
+                    statusCode: 200
+                    responseParameters:
+                      method.response.header.Access-Control-Allow-Methods: "'GET,OPTIONS,POST'"
+                      method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token'"
+                      method.response.header.Access-Control-Allow-Origin: "'*'"
+                passthroughBehavior: when_no_match
+                requestTemplates:
+                  application/json: "{\"statusCode\": 200}"
+                type: mock
         definitions:
           sessionCreationRequest:
             type: object
