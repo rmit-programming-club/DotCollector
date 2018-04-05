@@ -1,0 +1,2 @@
+
+../../.git/hooks/pre-commit

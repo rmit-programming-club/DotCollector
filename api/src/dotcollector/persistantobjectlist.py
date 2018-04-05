@@ -1,4 +1,5 @@
-import yaml
+from . import yaml
+
 
 class PersistantObjectList:
     def __init__(self, persistance):
@@ -22,5 +23,3 @@ class PersistantObjectList:
             if func(obj):
                 return obj
         return None
-        
-

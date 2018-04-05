@@ -12,8 +12,8 @@ class ConstructorError(MarkedYAMLError):
 
 class BaseConstructor:
 
-    yaml_constructors = {}
-    yaml_multi_constructors = {}
+    yaml_constructors: dict = {}
+    yaml_multi_constructors: dict = {}
 
     def __init__(self):
         self.constructed_objects = {}
