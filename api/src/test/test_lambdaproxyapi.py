@@ -108,7 +108,7 @@ class LambdaProxyApiTestCase(unittest.TestCase):
         self.assertIn('timestamp', session)
         self.assertIn('feedback', session)
 
-    def post_valid_session(self) -> None:
+    def post_valid_session(self) -> dict:
         request: dict = {
             'headers': None,
             'body': json.dumps({
@@ -393,3 +393,19 @@ class LambdaProxyApiTestCase(unittest.TestCase):
         }, yaml.load(response['body']))
 
         self.delete_all_sessions()
+
+    def test_delete_invalid_session(self) -> None:
+        request: dict = {
+            'headers': None,
+            'pathParameters': {
+                'id': 'nosuchid'
+            }
+        }
+
+        response: dict = self.api.delete_session(request, {})
+        self.assert_valid_headers(response)
+        self.assertEqual('404', response['statusCode'])
+        self.assertEqual({
+            'name': 'No Such Session',
+            'description': 'No such session with id nosuchid'
+        }, yaml.load(response['body']))

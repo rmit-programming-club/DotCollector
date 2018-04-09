@@ -41,7 +41,6 @@ class DotCollectorLambdaApi:
                 'Access-Control-Allow-Origin': '*'
             }
 
-
         return response
 
     def wants_yaml(self, event):
@@ -90,8 +89,8 @@ class DotCollectorLambdaApi:
         else:
             return self.make_response(event, body={
                 'name': 'No Such Session',
-                'description': 'No Such Session with id ' +session_id
-            })
+                'description': 'No such session with id ' + session_id
+            },code='404')
 
     def get_session_by_id(self, event, context):
 
@@ -108,15 +107,15 @@ class DotCollectorLambdaApi:
     def get_session_by_code(self, event, context):
         parameters = event['queryStringParameters']
         if parameters and 'code' in parameters:
-            session_code = event['queryStringParameters']['code']
+            code = event['queryStringParameters']['code']
 
-            session = self.dot_collector.get_session_by_access_code(session_code)
+            session = self.dot_collector.get_session_by_access_code(code)
             if session:
                 return self.make_response(event, body=session)
             else:
                 return self.make_response(event, body={
                     "name": "No Such Session",
-                    "description": "No such session with code " + session_code
+                    "description": "No such session with code " + code
                 }, code='404')
         else:
             return self.make_response(event, body={
