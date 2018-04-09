@@ -5,12 +5,12 @@ import time
 import random
 from typing import List
 
-from .persistantobjectlist import PersistantObjectList
+from .persistentobjectlist import PersistentObjectList
 
 
 class DotCollector:
-    def __init__(self, persistance):
-        self.session_list = PersistantObjectList(persistance)
+    def __init__(self, persistence):
+        self.session_list = PersistentObjectList(persistence)
 
     def get_sessions(self) -> List[dict]:
         return self.session_list.to_list()
@@ -20,6 +20,10 @@ class DotCollector:
         self.session_list.add(session_details)
 
         return session_details
+
+    def delete_session(self, session_id: str) -> None:
+        session = self.get_session_by_id(session_id)
+        self.session_list.remove(session)
 
     def get_session_by_id(self, session_id: str) -> dict:
         def has_correct_id(session: dict) -> bool:
@@ -47,4 +51,12 @@ class DotCollector:
         session["active"] = True
         session["timestamp"] = int(time.time())
         session["accessCode"] = random.randrange(1000000)
+        session['feedback'] = []
         return session
+
+    def add_feedback(self, session_id: str, feedback: dict) -> None:
+        session: dict = self.get_session_by_id(session_id)
+        self.session_list.remove(session)
+        feedback['timestamp'] = int(time.time())
+        session['feedback'].append(feedback)
+        self.session_list.add(session)

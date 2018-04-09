@@ -1,7 +1,7 @@
 from . import yaml
 
 
-class PersistantObjectList:
+class PersistentObjectList:
     def __init__(self, persistance):
         self.persistance = persistance
         nothing_in_persistance = len(persistance.read()) == 0
@@ -15,6 +15,11 @@ class PersistantObjectList:
     def add(self, obj):
         current = self.to_list()
         current.append(obj)
+        self.persistance.write(yaml.dump(current))
+
+    def remove(self, obj):
+        current = self.to_list()
+        current.remove(obj)
         self.persistance.write(yaml.dump(current))
 
     def find(self, func):

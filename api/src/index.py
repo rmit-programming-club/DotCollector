@@ -25,3 +25,13 @@ def get_session_by_code(event, context):
     """ entry for GET /sessionByAccessCode call """
     api = DotCollectorLambdaApi()
     return api.get_session_by_code(event, context)
+
+
+def get_feedback(event, context):
+    api = DotCollectorLambdaApi()
+    return api.get_feedback(event, context)
+
+
+def post_feedback(event, context):
+    api = DotCollectorLambdaApi()
+    return api.post_feedback(event, context)
