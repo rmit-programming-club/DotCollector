@@ -36,6 +36,7 @@ def post_feedback(event, context):
     api = DotCollectorLambdaApi()
     return api.post_feedback(event, context)
 
+
 def delete_session(event, context):
     api = DotCollectorLambdaApi()
     return api.delete_session(event, context)

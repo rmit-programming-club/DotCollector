@@ -90,7 +90,7 @@ class DotCollectorLambdaApi:
             return self.make_response(event, body={
                 'name': 'No Such Session',
                 'description': 'No such session with id ' + session_id
-            },code='404')
+            }, code='404')
 
     def get_session_by_id(self, event, context):
 
