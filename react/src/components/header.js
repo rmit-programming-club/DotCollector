@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {Menu, Header, Item, Image} from 'semantic-ui-react';
 
-import DotLogo from '../../../html/resources/dotlogo.png'
+import DotLogo from '../../dist/html/resources/dotlogo.png'
 
 export default class HeaderBar extends Component{
     constructor(props){
@@ -15,7 +15,9 @@ export default class HeaderBar extends Component{
                 <Item>
                   <Image size="mini" src={DotLogo}/>
                 </Item>
-                <Item><Header color="white">Dot Collector</Header></Item>
+                <Item>
+                    <Header color="white">Dot Collector</Header>
+                </Item>
             </Menu>
           </div>
         )
