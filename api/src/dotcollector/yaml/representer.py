@@ -5,15 +5,15 @@ __all__ = ['BaseRepresenter', 'SafeRepresenter', 'Representer',
 from .error import *
 from .nodes import *
 
-import datetime, sys, copyreg, types, base64, collections
+import datetime, sys, copyreg, types, base64, collections, typing
 
 class RepresenterError(YAMLError):
     pass
 
 class BaseRepresenter:
 
-    yaml_representers = {}
-    yaml_multi_representers = {}
+    yaml_representers: dict = {}
+    yaml_multi_representers: dict = {}
 
     def __init__(self, default_style=None, default_flow_style=None):
         self.default_style = default_style

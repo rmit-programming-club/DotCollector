@@ -21,7 +21,7 @@ Resources:
           !Join ["-", ["dotcollectordev", !Ref "AWS::Region", !Ref "AWS::AccountId"]]
         S3Key: "bundle/lambda.zip"
         S3ObjectVersion: !Ref "CodeVersion"
-      Handler: sessions.get_sessions
+      Handler: index.get_sessions
       Role:
         Fn::GetAtt: ["LambdaExecutionRole", "Arn"]
       Environment:
@@ -36,7 +36,22 @@ Resources:
           !Join ["-", ["dotcollectordev", !Ref "AWS::Region", !Ref "AWS::AccountId"]]
         S3Key: "bundle/lambda.zip"
         S3ObjectVersion: !Ref "CodeVersion"
-      Handler: sessions.post_sessions
+      Handler: index.post_sessions
+      Role:
+        Fn::GetAtt: ["LambdaExecutionRole", "Arn"]
+      Environment:
+        Variables:
+          BucketName: !Ref "Sessions"
+  DeleteSessionLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Runtime: python3.6
+      Code:
+        S3Bucket:
+          !Join ["-", ["dotcollectordev", !Ref "AWS::Region", !Ref "AWS::AccountId"]]
+        S3Key: "bundle/lambda.zip"
+        S3ObjectVersion: !Ref "CodeVersion"
+      Handler: index.delete_session
       Role:
         Fn::GetAtt: ["LambdaExecutionRole", "Arn"]
       Environment:
@@ -51,7 +66,7 @@ Resources:
           !Join ["-", ["dotcollectordev", !Ref "AWS::Region", !Ref "AWS::AccountId"]]
         S3Key: "bundle/lambda.zip"
         S3ObjectVersion: !Ref "CodeVersion"
-      Handler: sessions.get_session_by_id
+      Handler: index.get_session_by_id
       Role:
         Fn::GetAtt: ["LambdaExecutionRole", "Arn"]
       Environment:
@@ -66,22 +81,7 @@ Resources:
           !Join ["-", ["dotcollectordev", !Ref "AWS::Region", !Ref "AWS::AccountId"]]
         S3Key: "bundle/lambda.zip"
         S3ObjectVersion: !Ref "CodeVersion"
-      Handler: sessions.get_session_by_code
-      Role:
-        Fn::GetAtt: ["LambdaExecutionRole", "Arn"]
-      Environment:
-        Variables:
-          BucketName: !Ref "Sessions"
-  GetFeedbackLambda:
-    Type: AWS::Lambda::Function
-    Properties:
-      Runtime: python3.6
-      Code:
-        S3Bucket:
-          !Join ["-", ["dotcollectordev", !Ref "AWS::Region", !Ref "AWS::AccountId"]]
-        S3Key: "bundle/lambda.zip"
-        S3ObjectVersion: !Ref "CodeVersion"
-      Handler: feedback.get_feedback
+      Handler: index.get_session_by_code
       Role:
         Fn::GetAtt: ["LambdaExecutionRole", "Arn"]
       Environment:
@@ -96,7 +96,7 @@ Resources:
           !Join ["-", ["dotcollectordev", !Ref "AWS::Region", !Ref "AWS::AccountId"]]
         S3Key: "bundle/lambda.zip"
         S3ObjectVersion: !Ref "CodeVersion"
-      Handler: feedback.post_feedback
+      Handler: index.post_feedback
       Role:
         Fn::GetAtt: ["LambdaExecutionRole", "Arn"]
       Environment:
@@ -141,8 +141,8 @@ Resources:
               - !GetAtt ["PostSessionLambda", "Arn"]
               - !GetAtt ["GetSessionByIdLambda", "Arn"]
               - !GetAtt ["GetSessionByCodeLambda", "Arn"]
-              - !GetAtt ["GetFeedbackLambda", "Arn"]
               - !GetAtt ["PostFeedbackLambda", "Arn"]
+              - !GetAtt ["DeleteSessionLambda", "Arn"]
   APIGateway:
     Type: AWS::ApiGateway::RestApi
     Properties:
@@ -318,6 +318,30 @@ Resources:
                   default:
                     statusCode: '200'
                 httpMethod: POST
+            delete:
+              summary: deletes the session details given a unique session identifier
+              parameters:
+                - in: path
+                  name: id
+                  description: The identifier for the session
+                  required: true
+                  type: string
+              responses:
+                '204':
+                  description: Session returned successfully
+                '404':
+                  description: Could not find session with the given identifier
+                  schema:
+                    $ref: '#/definitions/error'
+              x-amazon-apigateway-integration:
+                type: AWS_PROXY
+                credentials: !GetAtt ["APIGatewayExecutionRole", "Arn"]
+                uri:
+                  !Join ["",["arn:aws:apigateway:", !Ref "AWS::Region", ":lambda:path/2015-03-31/functions/", !GetAtt ["DeleteSessionLambda", "Arn"], "/invocations"]]
+                responses:
+                  default:
+                    statusCode: '200'
+                httpMethod: POST
             options:
               consumes:
               - application/json
@@ -363,32 +387,6 @@ Resources:
                 #                '404':
                 #                  description: Could not find session with the given identifier
           /sessions/{id}/feedback:
-            get:
-              summary: Gets a list of all the feedback for a given session
-              parameters:
-                - in: path
-                  name: id
-                  description: The identifier for the session
-                  required: true
-                  type: string
-              responses:
-                '200':
-                  description: Feedback returned successfully
-                  schema:
-                    type: array
-                    items:
-                      $ref: '#/definitions/feedback'
-                '404':
-                  description: Could not find session with the given identifier
-              x-amazon-apigateway-integration:
-                type: AWS_PROXY
-                credentials: !GetAtt ["APIGatewayExecutionRole", "Arn"]
-                uri:
-                  !Join ["",["arn:aws:apigateway:", !Ref "AWS::Region", ":lambda:path/2015-03-31/functions/", !GetAtt ["GetFeedbackLambda", "Arn"], "/invocations"]]
-                responses:
-                  default:
-                    statusCode: '200'
-                httpMethod: POST
             post:
               summary: Posts a new piece of feedback for the session
               consumes:
@@ -444,7 +442,7 @@ Resources:
                   default:
                     statusCode: 200
                     responseParameters:
-                      method.response.header.Access-Control-Allow-Methods: "'GET,OPTIONS,POST'"
+                      method.response.header.Access-Control-Allow-Methods: "'OPTIONS,POST'"
                       method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token'"
                       method.response.header.Access-Control-Allow-Origin: "'*'"
                 passthroughBehavior: when_no_match
