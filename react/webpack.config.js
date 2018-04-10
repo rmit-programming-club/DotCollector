@@ -1,5 +1,6 @@
 const webpack = require('webpack');
 const path = require('path');
+const HtmlWebPackPlugin = require("html-webpack-plugin");
 
 module.exports = {
     entry: {
@@ -8,7 +9,7 @@ module.exports = {
     },
     output: {
         path: path.resolve(__dirname, 'dist'),
-        filename: "[name]-bundle.js"
+        filename: "[name]-bundle.js",
     },
     devtool: "source-map",
     devServer: {
@@ -36,7 +37,10 @@ module.exports = {
             }, {
                 test: /\.(png|jpg|jpeg)?$/,
                 use: {
-                    loader: "url-loader"
+                    loader: "file-loader",
+                    options: {
+                        name: './resources/[name].[ext]'
+                    }
                 }
             }, {
                 test: /\.sass$/,
@@ -47,12 +51,31 @@ module.exports = {
             }, {
                 test: /\.(eot|svg|ttf|woff|woff2)$/,
                 use: {
-                    loader: "url-loader"
+                    loader: "file-loader",
+                    options: {
+                        name: './resources/[name].[ext]'
+                    }
+                }
+            }, {
+                test: /\.html$/,
+                use: {
+                    loader: "html-loader"
                 }
             }
         ],
     },
-    plugins: [],
+    plugins: [
+        new HtmlWebPackPlugin({
+            template: "./src/student/student.html",
+            filename: "./student.html",
+            chunks: ["student"]
+        }),
+        new HtmlWebPackPlugin({
+            template: "./src/teacher/teacher.html",
+            filename: "./teacher.html",
+            chunks: ["teacher"]
+        })
+    ],
     watch: false,
     watchOptions: {
         aggregateTimeout: 1000,
