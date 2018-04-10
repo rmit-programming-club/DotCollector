@@ -36,10 +36,7 @@ module.exports = {
             }, {
                 test: /\.(png|jpg|jpeg)?$/,
                 use: {
-                    loader: "file-loader",
-                    options: {
-                        name: "images/[name].[ext]"
-                    }
+                    loader: "url-loader"
                 }
             }, {
                 test: /\.sass$/,
@@ -50,10 +47,7 @@ module.exports = {
             }, {
                 test: /\.(eot|svg|ttf|woff|woff2)$/,
                 use: {
-                    loader: "file-loader",
-                    options: {
-                        name: "resources/[name].[ext]"
-                    }
+                    loader: "url-loader"
                 }
             }
         ],
