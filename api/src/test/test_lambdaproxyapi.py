@@ -218,7 +218,7 @@ class LambdaProxyApiTestCase(unittest.TestCase):
         self.assertEqual('404', response['statusCode'])
         self.assertEqual({
             'name': 'No Such Session',
-            'description': 'No such session with id notanid'
+            'description': 'No such session with id \'notanid\''
         }, yaml.load(response['body']))
 
     def test_get_session_by_invalid_code(self):
@@ -235,7 +235,7 @@ class LambdaProxyApiTestCase(unittest.TestCase):
         self.assertEqual('404', response['statusCode'])
         self.assertEqual({
             'name': 'No Such Session',
-            'description': 'No such session with code notacode'
+            'description': 'No such session with code \'notacode\''
         }, yaml.load(response['body']))
 
     def test_get_session_with_no_code(self):
@@ -323,7 +323,7 @@ class LambdaProxyApiTestCase(unittest.TestCase):
         self.assertEqual('404', response['statusCode'])
         self.assertEqual({
             'name': 'No Such Session',
-            'description': 'No such session with id notanid'
+            'description': 'No such session with id \'notanid\''
         }, yaml.load(response['body']))
 
     def test_post_feedback_with_no_body(self) -> None:
@@ -407,5 +407,5 @@ class LambdaProxyApiTestCase(unittest.TestCase):
         self.assertEqual('404', response['statusCode'])
         self.assertEqual({
             'name': 'No Such Session',
-            'description': 'No such session with id nosuchid'
+            'description': 'No such session with id \'nosuchid\''
         }, yaml.load(response['body']))

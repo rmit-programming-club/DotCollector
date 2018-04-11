@@ -80,6 +80,13 @@ class DotCollectorLambdaApi:
                 'description': 'Could not parse body as ' + content_type
             })
 
+    def make_no_such_session_with(self, event, prop, value):
+        description = 'No such session with {} \'{}\''.format(prop, value)
+        return self.make_response(event, body={
+            'name': 'No Such Session',
+            'description': description
+        }, code='404')
+
     def delete_session(self, event, context):
         session_id = event['pathParameters']['id']
         session = self.dot_collector.get_session_by_id(session_id)
@@ -87,10 +94,7 @@ class DotCollectorLambdaApi:
             self.dot_collector.delete_session(session_id)
             return self.make_response(event)
         else:
-            return self.make_response(event, body={
-                'name': 'No Such Session',
-                'description': 'No such session with id ' + session_id
-            }, code='404')
+            return self.make_no_such_session_with(event, 'id', session_id)
 
     def get_session_by_id(self, event, context):
 
@@ -99,10 +103,7 @@ class DotCollectorLambdaApi:
         if session:
             return self.make_response(event, body=session)
         else:
-            return self.make_response(event, body={
-                "name": "No Such Session",
-                "description": "No such session with id " + session_id
-            }, code='404')
+            return self.make_no_such_session_with(event, 'id', session_id)
 
     def get_session_by_code(self, event, context):
         parameters = event['queryStringParameters']
@@ -113,10 +114,7 @@ class DotCollectorLambdaApi:
             if session:
                 return self.make_response(event, body=session)
             else:
-                return self.make_response(event, body={
-                    "name": "No Such Session",
-                    "description": "No such session with code " + code
-                }, code='404')
+                return self.make_no_such_session_with(event, 'code', code)
         else:
             return self.make_response(event, body={
                 'name': 'Missing parameter',
@@ -129,10 +127,7 @@ class DotCollectorLambdaApi:
         feedback: List[dict] = self.dot_collector.get_feedback(session_id)
 
         if feedback is None:
-            return self.make_response(event, body={
-                    'name': 'NoSuchSession',
-                    'description': 'No such session with id ' + session_id
-                }, code='404')
+            return self.make_no_such_session_with(event, 'id', session_id)
         else:
             return self.make_response(event, body=feedback)
 
