@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {Grid, Container, Image} from 'semantic-ui-react';
 
-import Dotlogo from '../../../html/resources/dotlogo.png'
+import Dotlogo from '../../../resources/dotlogo.png'
 import Question from '../components/question-box';
 
 const QUESTIONS = [
@@ -22,11 +22,14 @@ export default class Feedback extends Component {
     }
 
     render() {
+        const {session} = this.props;
+        const {accessCode, name} = session;
+        // TODO adjust styling here
         return (
             <div>
                 <Image src={Dotlogo} centered/>
                 <Container textAlign="center">
-                    <p className="primary-text">Your current session is XXX-XXX: User Centered Design</p>
+                    <p className="primary-text">Your current session is {accessCode}: {name}</p>
                 </Container>
                 <Grid doubling stackable centered columns={1}>
                     <Grid.Row only="computer tablet"><Grid.Column largeScreen="8" computer="12" widescreen="8" as={Container}>

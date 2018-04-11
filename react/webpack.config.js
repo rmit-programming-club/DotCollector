@@ -1,5 +1,6 @@
 const webpack = require('webpack');
 const path = require('path');
+const HtmlWebPackPlugin = require("html-webpack-plugin");
 
 module.exports = {
     entry: {
@@ -8,15 +9,13 @@ module.exports = {
     },
     output: {
         path: path.resolve(__dirname, 'dist'),
-      //      publicPath: "dist/",
-        filename: "[name]-bundle.js"
+        filename: "[name]-bundle.js",
     },
     devtool: "source-map",
     devServer: {
         proxy: { // proxy URLs to backend development server
             '/api': 'http://localhost:3000'
         },
-  //        contentBase: 'html/',
         hot: false, // hot module replacement. Depends on HotModuleReplacementPlugin
         https: false, // true for self-signed, object for cert authority
         noInfo: true // only errors & warns on hot reload
@@ -40,7 +39,7 @@ module.exports = {
                 use: {
                     loader: "file-loader",
                     options: {
-                        name: "resources/[name].[ext]"
+                        name: './resources/[name].[ext]'
                     }
                 }
             }, {
@@ -54,13 +53,29 @@ module.exports = {
                 use: {
                     loader: "file-loader",
                     options: {
-                        name: "/../../dist/resources/fonts/[name].[ext]"
+                        name: './resources/[name].[ext]'
                     }
+                }
+            }, {
+                test: /\.html$/,
+                use: {
+                    loader: "html-loader"
                 }
             }
         ],
     },
-    plugins: [],
+    plugins: [
+        new HtmlWebPackPlugin({
+            template: "./src/student/student.html",
+            filename: "./student.html",
+            chunks: ["student"]
+        }),
+        new HtmlWebPackPlugin({
+            template: "./src/teacher/teacher.html",
+            filename: "./teacher.html",
+            chunks: ["teacher"]
+        })
+    ],
     watch: false,
     watchOptions: {
         aggregateTimeout: 1000,
