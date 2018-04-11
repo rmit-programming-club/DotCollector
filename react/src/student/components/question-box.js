@@ -14,7 +14,7 @@ const QuestionBox = (props) => {
             <Button basic color="red" className="basic-red-button">{min}</Button>
             <Button basic color="red" className="basic-red-button">2</Button>
             <Button basic color="red" className="basic-red-button">3</Button>
-            <Button basic color="red" className="basic-red-button">Just Right.</Button>
+            <Button basic color="red" className="basic-red-button">4</Button>
             <Button basic color="red" className="basic-red-button">5</Button>
             <Button basic color="red" className="basic-red-button">6</Button>
             <Button basic color="red" className="basic-red-button">{max}</Button>
@@ -23,7 +23,7 @@ const QuestionBox = (props) => {
 
     return (
         <div style={{padding: "10px"}}>
-            <Card fluid>
+            <Card style={{width: "530px"}}>
                 <Card.Content>
                     <Card.Header>{title}</Card.Header>
                 </Card.Content>
