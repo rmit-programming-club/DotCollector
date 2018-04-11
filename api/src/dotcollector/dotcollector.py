@@ -50,7 +50,8 @@ class DotCollector:
         session["id"] = self.get_unique_identifier(session_name)
         session["active"] = True
         session["timestamp"] = int(time.time())
-        session["accessCode"] = random.randrange(1000000)
+        code = random.randrange(1000000)
+        session["accessCode"] = "{0:06d}".format(code)
         session['feedback'] = []
         return session
 
