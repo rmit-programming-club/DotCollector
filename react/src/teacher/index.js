@@ -10,17 +10,21 @@ import '../css/sass/index.sass';
 import HeaderBar from '../components/header'
 import SessionListing from './components/sessions'
 import CreateSessionModal from './components/createsessionmodal'
+import NewSessionPage from './components/newsessionpage'
 
 
 class Teacher extends Component {
     constructor(props) {
         super(props);
         this.state = {
-          modalOpen: false
+          modalOpen: false,
+          splashOpen: false,
+          sessionName: ""
         };
     }
 
     render() {
+        if(!this.state.splashOpen){
         return (
             <div className={"teacher-background"}>
               <HeaderBar />
@@ -29,11 +33,20 @@ class Teacher extends Component {
               <SessionListing />
             </div>
         )
+        }
+        else{
+            return (
+                <div className={"teacher-background"}>
+                    <HeaderBar />
+                    <NewSessionPage sessionName={this.state.sessionName} /> 
+                </div>
+          )
+        }
     }
 
     newSession = (name) => {
         console.log(name);
-        this.setState({modalOpen: false});
+        this.setState({modalOpen: false, splashOpen: true, sessionName: name});
     };
 
     openSessionDialogue = (e) => {
