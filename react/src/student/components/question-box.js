@@ -8,7 +8,15 @@ const QuestionBox = (props) => {
 
     console.log(isMobile);
     const buttons = isMobile ? (
-        <p>// TODO implement mobile buttons</p>
+        <Button.Group as={Container} basic vertical fluid className="ui 5 buttons" textAlign="center">
+            <Button basic color="red" className="basic-red-button">{min}</Button>
+            <Button basic color="red" className="basic-red-button">2</Button>
+            <Button basic color="red" className="basic-red-button">3</Button>
+            <Button basic color="red" className="basic-red-button">4</Button>
+            <Button basic color="red" className="basic-red-button">5</Button>
+            <Button basic color="red" className="basic-red-button">6</Button>
+            <Button basic color="red" className="basic-red-button">{max}</Button>
+        </Button.Group>
     ) : (
         <Container className="ui 5 buttons" textAlign="center">
             <Button basic color="red" className="basic-red-button">{min}</Button>

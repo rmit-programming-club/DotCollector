@@ -13,6 +13,22 @@ const QUESTIONS = [
         title: "Do you understand the content?",
         min: "Not at all.",
         max: "Wholly."
+    }, {
+        title: "Do you understand the content?2",
+        min: "Not at all.",
+        max: "Wholly."
+    }, {
+        title: "Do you understand the content?3",
+        min: "Not at all.",
+        max: "Wholly."
+    }, {
+        title: "Do you understand the content?4",
+        min: "Not at all.",
+        max: "Wholly."
+    }, {
+        title: "Do you understand the content?5",
+        min: "Not at all.",
+        max: "Wholly."
     }
 ];
 
@@ -27,17 +43,16 @@ export default class Feedback extends Component {
         // TODO adjust styling here
         return (
             <div>
-                <Image src={Dotlogo} centered/>
                 <Container textAlign="center">
                     <p className="primary-text">Your current session is {accessCode}: {name}</p>
                 </Container>
                 <Grid doubling stackable centered columns={1}>
-                    <Grid.Row only="computer tablet"><Grid.Column largeScreen="8" computer="12" widescreen="8" as={Container}>
+                    <Grid.Row only="computer tablet">
                         {QUESTIONS.map((question, i) => <Question question={question} key={i}/>)}
-                    </Grid.Column></Grid.Row>
-                    <Grid.Row only="mobile"><Grid.Column>
+                    </Grid.Row>
+                    <Grid.Row only="mobile">
                         {QUESTIONS.map((question, i) => <Question question={question} key={i} isMobile/>)}
-                    </Grid.Column></Grid.Row>
+                    </Grid.Row>
                 </Grid>
             </div>
         )

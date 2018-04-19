@@ -11,7 +11,7 @@ module.exports = {
         path: path.resolve(__dirname, 'dist'),
         filename: "[name]-bundle.js",
     },
-    devtool: "source-map",
+    mode: "development",
     devServer: {
         proxy: { // proxy URLs to backend development server
             '/api': 'http://localhost:3000'
