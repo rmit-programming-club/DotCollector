@@ -48,8 +48,8 @@ export default class SessionList extends Component{
         return (
           <div className="session-listing">
           <List>
-            {items.map(item => (
-              <Item><Header>{item.name}</Header></Item>
+            {items.map((item, i) => (
+              <Item key={i}><Header>{item.name}</Header></Item>
             ))}
           </List>
           </div>

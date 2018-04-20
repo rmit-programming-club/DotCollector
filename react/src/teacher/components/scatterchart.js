@@ -8,14 +8,47 @@ export default class ScatterChart extends Component{
         this.state = {
         }
     }
+    
+    loadChart = (element) =>{
+        this.ctx = element.getContext("2d");
+    }
+    
+    componentDidMount(){
+        this.refreshChart(this.ctx);
+    }
+  
+    refreshChart = (context) =>{
+        new Chart(context, {
+          type: 'scatter',
+          data: {
+              datasets: [{
+                  backgroundColor: "rgba(220,0,0,0.5)",
+                  label: this.props.name,
+                  data: this.props.data
+              }]
+          },
+          options: {
+              scales: {
+                    xAxes: [{
+                        type: 'time',
+                        time: {
+                            unit: 'minute'
+                        }
+                    }]
+                }
+            }
+        })
+    }
 
     render() {
-      let canvasRef = React.createRef();
-      let canvas = <canvas width=200 height=150 ref={canvasRef}></canvas>;
-      ctx = canvasRef.current.getContext();
+      if(this.ctx){
+          this.refreshChart(this.ctx);
+      }
+      let canvas = <canvas width="200" height="150" ref={this.loadChart} />;
 
       return (
         <div className="scatter-chart">
+          {canvas}
         </div>
       );
     }

@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {Header,List, Item} from 'semantic-ui-react';
 import SplashScreen from './splash.js'
+import RealtimeSession from './realtimesession.js'
 
 const sessionsEndpoint = 'https://api.dot.hazelfire.org/sessions'
 
@@ -10,7 +11,8 @@ export default class NewSessionPage extends Component{
         this.state = {
             error: null,
             isLoaded: false,
-            session: {}
+            session: {},
+            splash: true
         }
     }
 
@@ -47,14 +49,21 @@ export default class NewSessionPage extends Component{
         return <div className="new-session-page">Error: {error.message}</div>;
       }
       else if(!isLoaded){
-        return <div className="new-session-page">Loading</div>
+        return <div className="new-session-page">Loading</div>;
       }
       else{
         return (
           <div className="new-session-page">
-              <SplashScreen code={this.state.session.accessCode} />
+              { this.state.splash ?
+              <SplashScreen code={this.state.session.accessCode} onFeedback={this.toggleSplash}/> :
+              <RealtimeSession session={this.state.session} onSplash={this.toggleSplash} />
+              }
           </div>
           );
       }
+    }
+
+    toggleSplash = () =>{
+        this.setState({splash: !this.state.splash});
     }
 }

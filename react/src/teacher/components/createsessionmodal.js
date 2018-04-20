@@ -12,7 +12,7 @@ const customStyles = {
     bottom: 'auto',
     marginRight: '-50%',
     transform: 'translate(-50%, -50%)',
-    "text-align": 'center'
+    textAlign: 'center'
   }
 };
 
@@ -50,9 +50,10 @@ export default class CreateSessionModal extends Component{
             onRequestClose={this.closeModal}
             style={customStyles}
             contentLabel="Create Session Modal"
+            ariaHideApp={false}
           >
             <h2>What is the name of your session?</h2>
-            <input onChange={this.updateInputValue} type="text" autofocus="autofocus" />
+            <input onChange={this.updateInputValue} type="text" autoFocus="autofocus" />
             <b />
             <Button onClick={this.closeModal}>Create</Button>
           </Modal>

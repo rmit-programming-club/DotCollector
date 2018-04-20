@@ -16,7 +16,7 @@ export default class HeaderBar extends Component{
                   <Image size="mini" src={DotLogo}/>
                 </Item>
                 <Item>
-                    <Header color="white">Dot Collector</Header>
+                    <Header>Dot Collector</Header>
                 </Item>
             </Menu>
           </div>
