@@ -9,7 +9,7 @@ class LambdaProxyApiTestCase(unittest.TestCase):
     def setUp(self) -> None:
         self.api = DotCollectorLambdaApi()
 
-    def assert_valid_headers(self, response: dict, yaml_wanted: bool=False):
+    def assert_valid_headers(self, response: dict, yaml_wanted: bool = False):
         self.assertIn('headers', response)
 
         self.assert_cors(response)
@@ -23,14 +23,15 @@ class LambdaProxyApiTestCase(unittest.TestCase):
 
     def assert_content_type(self, response: dict, yaml_wanted: bool):
         headers: dict = response['headers']
-        self.assertIn('Content-Type', headers)
+        if 'body' in response:
+            self.assertIn('Content-Type', headers)
 
-        if yaml_wanted:
-            desired_content_type = 'application/yaml'
-        else:
-            desired_content_type = 'application/json'
+            if yaml_wanted:
+                desired_content_type = 'application/yaml'
+            else:
+                desired_content_type = 'application/json'
 
-        self.assertEqual(headers['Content-Type'], desired_content_type)
+            self.assertEqual(headers['Content-Type'], desired_content_type)
 
     def get_sessions(self) ->List[dict]:
         request = {
@@ -317,7 +318,7 @@ class LambdaProxyApiTestCase(unittest.TestCase):
                 })
         }
 
-        response: dict = self.api.get_session_by_id(request, {})
+        response: dict = self.api.post_feedback(request, {})
 
         self.assert_valid_headers(response)
         self.assertEqual('404', response['statusCode'])
@@ -409,3 +410,29 @@ class LambdaProxyApiTestCase(unittest.TestCase):
             'name': 'No Such Session',
             'description': 'No such session with id \'nosuchid\''
         }, yaml.load(response['body']))
+
+    def test_patch_session(self) -> None:
+        session = self.post_valid_session()
+        session_id = session['id']
+        request: dict = {
+            'headers': None,
+            'pathParameters': {
+                'id': session_id
+            },
+            'body': json.dumps({
+                'active': False
+            })
+        }
+
+        response: dict = self.api.patch_session(request, {})
+        self.assert_valid_headers(response)
+        self.assertEqual('204', response['statusCode'])
+
+        get_session_request: dict = {
+            'headers': None
+        }
+
+        sessions = self.api.get_sessions(get_session_request, {})
+        session['active'] = False
+        self.assertEqual(session, yaml.load(sessions['body'])[0])
+        self.delete_all_sessions()

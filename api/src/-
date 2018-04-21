@@ -16,18 +16,8 @@ class DotCollectorLambdaApi:
 
         return self.make_response(event, body=sessions)
 
-    def check_session_exists(callback):
-        def wrapper(self, event, context):
-            session_id = event['pathParameters']['id']
-            session = self.dot_collector.get_session_by_id(session_id)
-            if session:
-                return callback(self, event, context)
-            else:
-                return self.make_no_such_session_with(event, 'id', session_id)
-        return wrapper
-
     def make_response(self, event: dict,
-                      code: str = '200', body: dict = None) -> dict:
+                      code: str='200', body: dict=None) -> dict:
 
         response_is_yaml = self.wants_yaml(event)
 
@@ -97,18 +87,23 @@ class DotCollectorLambdaApi:
             'description': description
         }, code='404')
 
-    @check_session_exists
     def delete_session(self, event, context):
         session_id = event['pathParameters']['id']
-        self.dot_collector.delete_session(session_id)
-        return self.make_response(event)
+        session = self.dot_collector.get_session_by_id(session_id)
+        if session:
+            self.dot_collector.delete_session(session_id)
+            return self.make_response(event)
+        else:
+            return self.make_no_such_session_with(event, 'id', session_id)
 
-    @check_session_exists
     def get_session_by_id(self, event, context):
 
         session_id = event['pathParameters']['id']
         session = self.dot_collector.get_session_by_id(session_id)
-        return self.make_response(event, body=session)
+        if session:
+            return self.make_response(event, body=session)
+        else:
+            return self.make_no_such_session_with(event, 'id', session_id)
 
     def get_session_by_code(self, event, context):
         parameters = event['queryStringParameters']
@@ -126,36 +121,38 @@ class DotCollectorLambdaApi:
                 'description': 'This command requires the code parameter'
             }, code='400')
 
-    @check_session_exists
     def post_feedback(self, event: dict, context: dict) -> dict:
         session_id = event['pathParameters']['id']
-        try:
-            if event['body']:
-                request_body = yaml.load(event['body'])
-                if 'question' in request_body and 'value' in request_body:
-                    self.dot_collector.add_feedback(session_id, request_body)
-                    return self.make_response(event)
+        session: List[dict] = self.dot_collector.get_session_by_id(session_id)
+        if session is None:
+            return self.make_no_such_session_with(event, 'id', session_id)
+        else:
+            try:
+                if event['body']:
+                    request_body = yaml.load(event['body'])
+                    if 'question' in request_body and 'value' in request_body:
+                        self.dot_collector.add_feedback(session_id, request_body)
+                        return self.make_response(event)
+                    else:
+                        return self.make_response(event, body={
+                            "name": "Missing Field",
+                            "description": "Requires question and value fields"
+                        }, code='400')
                 else:
                     return self.make_response(event, body={
-                        "name": "Missing Field",
-                        "description": "Requires question and value fields"
+                        'name': 'Missing Body',
+                        'description': 'This operation requires a body'
                     }, code='400')
-            else:
-                return self.make_response(event, body={
-                    'name': 'Missing Body',
-                    'description': 'This operation requires a body'
-                }, code='400')
 
-        except yaml.YAMLError as e:
-            return self.make_response(event, body=e, code='400')
+            except yaml.YAMLError as e:
+                return self.make_response(event, body=e, code='400')
 
-    @check_session_exists
     def patch_session(self, event: dict, context: dict) -> dict:
         session_id = event['pathParameters']['id']
         try:
             if event['body']:
                 request_body = yaml.load(event['body'])
-                self.dot_collector.patch_session(session_id, request_body)
+                self.dot_collector.patchSession(session_id, request_body)
                 return self.make_response(event)
             else:
                 return self.make_response(event, body={

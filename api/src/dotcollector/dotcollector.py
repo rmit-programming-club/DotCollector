@@ -61,3 +61,11 @@ class DotCollector:
         feedback['timestamp'] = int(time.time())
         session['feedback'].append(feedback)
         self.session_list.add(session)
+
+    def patch_session(self, session_id: str, patch: dict) -> None:
+        session: dict = self.get_session_by_id(session_id)
+        self.session_list.remove(session)
+        for change in patch.items():
+            if change[0] in session:
+                session[change[0]] = change[1]
+        self.session_list.add(session)

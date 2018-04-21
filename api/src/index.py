@@ -40,3 +40,8 @@ def post_feedback(event, context):
 def delete_session(event, context):
     api = DotCollectorLambdaApi()
     return api.delete_session(event, context)
+
+
+def patch_session(event, context):
+    api = DotCollectorLambdaApi()
+    return api.patch_session(event, context)
