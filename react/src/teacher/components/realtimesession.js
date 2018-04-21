@@ -70,6 +70,7 @@ export default class RealtimeSession extends Component{
               {charts}
               </div>
               <Button onClick={this.props.onSplash}>Show Splash</Button>
+              <Button onClick={this.props.onEndSession}>End Session</Button>
           </div>
           );
     }

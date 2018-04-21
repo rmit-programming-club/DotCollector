@@ -10,7 +10,8 @@ export default class ScatterChart extends Component{
     }
     
     loadChart = (element) =>{
-        this.ctx = element.getContext("2d");
+        if(element)
+            this.ctx = element.getContext("2d");
     }
     
     componentDidMount(){

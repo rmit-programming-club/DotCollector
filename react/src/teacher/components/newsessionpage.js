@@ -56,7 +56,7 @@ export default class NewSessionPage extends Component{
           <div className="new-session-page">
               { this.state.splash ?
               <SplashScreen code={this.state.session.accessCode} onFeedback={this.toggleSplash}/> :
-              <RealtimeSession session={this.state.session} onSplash={this.toggleSplash} />
+              <RealtimeSession session={this.state.session} onSplash={this.toggleSplash} onEndSession={this.endSession}/>
               }
           </div>
           );
@@ -65,5 +65,10 @@ export default class NewSessionPage extends Component{
 
     toggleSplash = () =>{
         this.setState({splash: !this.state.splash});
+    }
+    
+    endSession = () =>{
+        // TODO Add actual editing of session state 
+        this.props.onEndSession();
     }
 }

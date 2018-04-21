@@ -38,7 +38,7 @@ class Teacher extends Component {
             return (
                 <div className={"teacher-background"}>
                     <HeaderBar />
-                    <NewSessionPage sessionName={this.state.sessionName} /> 
+                    <NewSessionPage sessionName={this.state.sessionName} onEndSession={this.endSession}/> 
                 </div>
           )
         }
@@ -47,7 +47,11 @@ class Teacher extends Component {
     newSession = (name) => {
         console.log(name);
         this.setState({modalOpen: false, splashOpen: true, sessionName: name});
-    };
+    }
+    
+    endSession =  () => {
+        this.setState({splashOpen: false});
+    }
 
     openSessionDialogue = (e) => {
         this.setState({modalOpen: true});
