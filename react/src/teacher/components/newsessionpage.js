@@ -68,7 +68,23 @@ export default class NewSessionPage extends Component{
     }
     
     endSession = () =>{
-        // TODO Add actual editing of session state 
-        this.props.onEndSession();
+        const endpoint = sessionsEndpoint + "/" + this.state.session.id
+        fetch(endpoint, {
+            method: 'PATCH',
+            headers: new Headers({
+                'Content-Type': 'application/json'
+            }),
+            body: JSON.stringify({
+                'active': false
+            })
+        }).
+        then(
+            (result)=>{
+                this.props.onEndSession();
+            },
+            (error)=>{
+                this.props.onEndSession();
+            }
+        );
     }
 }
