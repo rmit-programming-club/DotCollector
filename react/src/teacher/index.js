@@ -11,6 +11,7 @@ import HeaderBar from '../components/header'
 import SessionListing from './components/sessions'
 import CreateSessionModal from './components/createsessionmodal'
 import NewSessionPage from './components/newsessionpage'
+import SessionDetailsPage from './components/sessiondetails'
 
 
 class Teacher extends Component {
@@ -19,20 +20,30 @@ class Teacher extends Component {
         this.state = {
           modalOpen: false,
           splashOpen: false,
-          sessionName: ""
+          sessionName: "",
+          sessionDetailsOpen: false,
+          session: null
         };
     }
 
     render() {
-        if(!this.state.splashOpen){
+        if(!this.state.splashOpen && !this.state.sessionDetailsOpen){
         return (
             <div className={"teacher-background"}>
               <HeaderBar />
               <Button onClick={this.openSessionDialogue}>New Session</Button>
               <CreateSessionModal onSubmit={this.newSession} isOpen={this.state.modalOpen}/>
-              <SessionListing />
+              <SessionListing onOpenSession={this.openSession}/>
             </div>
         )
+        }
+        else if(this.state.sessionDetailsOpen){
+            return (
+                <div className={"teacher-background"}>
+                    <HeaderBar />
+                    <SessionDetailsPage session={this.state.session} onExit={this.openListing}/>
+                </div>
+            )
         }
         else{
             return (
@@ -55,6 +66,14 @@ class Teacher extends Component {
 
     openSessionDialogue = (e) => {
         this.setState({modalOpen: true});
+    }
+
+    openSession = (session) =>{
+        this.setState({sessionDetailsOpen: true, session: session});
+    }
+
+    openListing = () =>{
+        this.setState({sessionDetailsOpen: false});
     }
 }
 ReactDOM.render(
