@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Header,List, Item} from 'semantic-ui-react';
+import {Button, Menu, Item, Header} from 'semantic-ui-react';
 
 const sessionsEndpoint = 'https://api.dot.hazelfire.org/sessions'
 
@@ -47,13 +47,43 @@ export default class SessionList extends Component{
       else{
         return (
           <div className="session-listing">
-          <List>
+          <Menu secondary={true} vertical={true} fluid={true}>
             {items.map((item, i) => (
-              <Item key={i}><Header>{item.name}</Header></Item>
+                <a className="item" key={i}>
+                    <div>
+                    {item.name}
+                    <Button floated="right" onClick={()=>this.deleteSession(item.id)} >Delete</Button>
+                    <div style={{clear: 'both'}} ></div>
+                    </div>
+                </a>
             ))}
-          </List>
+          </Menu>
           </div>
           );
       }
+    }
+
+    deleteSession = (id) =>{
+        this.setState({isLoaded: false})
+        fetch(sessionsEndpoint + "/" + id, {
+            headers: new Headers({}),
+            method: "DELETE"
+        }).
+            then(
+                (result)=>{
+                    let items = this.state.items;
+                    items = items.filter((item)=>item.id !== id)
+                    this.setState({
+                        isLoaded: true,
+                        items: items
+                    });
+                },
+                (error)=>{
+                    this.setState({
+                        isLoaded: true,
+                        error: error
+                    });
+                }
+            )
     }
 }
