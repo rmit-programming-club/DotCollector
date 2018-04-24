@@ -5,37 +5,35 @@ import time
 import random
 from typing import List
 
-from .persistentobjectlist import PersistentObjectList
+from .SessionList import SessionList
 
 
 class DotCollector:
     def __init__(self, persistence):
-        self.session_list = PersistentObjectList(persistence)
+        self.session_list = SessionList(persistence)
 
     def get_sessions(self) -> List[dict]:
-        return self.session_list.to_list()
+        return self.session_list.sessions
 
     def add_session(self, session_name: str) -> dict:
         session_details: dict = self.generate_session_details(session_name)
-        self.session_list.add(session_details)
+        self.session_list.sessions.append(session_details)
+        self.session_list.save()
 
         return session_details
 
     def delete_session(self, session_id: str) -> None:
         session = self.get_session_by_id(session_id)
-        self.session_list.remove(session)
+        self.session_list.sessions.remove(session)
+        self.session_list.save()
 
     def get_session_by_id(self, session_id: str) -> dict:
-        def has_correct_id(session: dict) -> bool:
-            return session['id'] == session_id
 
-        return self.session_list.find(has_correct_id)
+        return self.session_list.get_by_id(session_id)
 
     def get_session_by_access_code(self, session_access_code: str) -> dict:
-        def has_correct_access_code(session: dict) -> bool:
-            return str(session['accessCode']) == session_access_code
 
-        return self.session_list.find(has_correct_access_code)
+        return self.session_list.get_by_code(session_access_code)
 
     @staticmethod
     def get_unique_identifier(session_name: str) -> str:
@@ -56,16 +54,14 @@ class DotCollector:
         return session
 
     def add_feedback(self, session_id: str, feedback: dict) -> None:
-        session: dict = self.get_session_by_id(session_id)
-        self.session_list.remove(session)
+        session: dict = self.session_list.get_by_id(session_id)
         feedback['timestamp'] = int(time.time())
         session['feedback'].append(feedback)
-        self.session_list.add(session)
+        self.session_list.save()
 
     def patch_session(self, session_id: str, patch: dict) -> None:
         session: dict = self.get_session_by_id(session_id)
-        self.session_list.remove(session)
         for change in patch.items():
             if change[0] in session:
                 session[change[0]] = change[1]
-        self.session_list.add(session)
+        self.session_list.save()
