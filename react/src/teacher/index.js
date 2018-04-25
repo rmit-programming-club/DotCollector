@@ -68,7 +68,8 @@ class Teacher extends Component {
         this.setState({modalOpen: true});
     }
 
-    openSession = (session) =>{
+    openSession = (e, session) =>{
+        if(e.target !== e.currentTarget) return;
         this.setState({sessionDetailsOpen: true, session: session});
     }
 
