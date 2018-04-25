@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
-import {Header, Button} from 'semantic-ui-react';
+import {Header, Button, Grid} from 'semantic-ui-react';
+import './splash.css'
 
 export default class SplashScreen extends Component{
     constructor(props){
@@ -14,11 +15,15 @@ export default class SplashScreen extends Component{
     render() {
       return (
         <div className="splash-screen">
-          <Header>Go to</Header>
-          <Header><a href="dot.hazelfire.org/student.html">dot.hazelfire.org/student.html</a></Header>
-          <Header>and enter the following code into your device</Header>
-          <Header>{this.props.code}</Header>
-          <Button onClick={this.props.onFeedback}>To feedback</Button>
+          <Grid centered>
+            <Grid.Column verticalAlign="middle" textAlign="center">
+            <Header>Go to</Header>
+            <Header><a href="dot.hazelfire.org/student.html">dot.hazelfire.org/student.html</a></Header>
+            <Header>and enter the following code into your device</Header>
+            <Header>{this.props.code}</Header>
+            <Button onClick={this.props.onFeedback}>To feedback</Button>
+            </Grid.Column>
+          </Grid>
         </div>
       );
     }
