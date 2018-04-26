@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Button, List, Item} from 'semantic-ui-react';
+import {Grid, Button, List, Item} from 'semantic-ui-react';
 import ScatterChart from './scatterchart.js'
 
 const sessionsEndpoint = 'https://api.dot.hazelfire.org/sessions'
@@ -63,11 +63,13 @@ export default class RealtimeSession extends Component{
             graphData.set(feedback.question, currentFeedback);
         }
         
-        const charts = Array.from(graphData.entries()).map((question, i) => (<ScatterChart key={i} data={question[1]} name={question[0]} /> ))
+        const charts = Array.from(graphData.entries()).map((question, i) => (<Grid.Column width={6}><ScatterChart key={i} data={question[1]} name={question[0]} /> </Grid.Column>))
         return (
           <div className="realtime-session">
               <div className="realtime-graphs">
+              <Grid>
               {charts}
+              </Grid>
               </div>
               <Button onClick={this.props.onSplash}>Show Splash</Button>
               <Button onClick={this.props.onEndSession}>End Session</Button>

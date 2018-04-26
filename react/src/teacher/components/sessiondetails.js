@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Header,List, Item, Button} from 'semantic-ui-react';
+import {Grid, Header,List, Item, Button} from 'semantic-ui-react';
 import ScatterChart from './scatterchart.js'
 import RealtimeSession from './realtimesession.js'
 
@@ -32,11 +32,13 @@ export default class SessionDetailsPage extends Component{
             graphData.set(feedback.question, currentFeedback);
         }
         
-        const charts = Array.from(graphData.entries()).map((question, i) => (<ScatterChart key={i} data={question[1]} name={question[0]} /> ))
+        const charts = Array.from(graphData.entries()).map((question, i) => (<Grid.Column width={6}> <ScatterChart key={i} data={question[1]} name={question[0]} /> </Grid.Column>))
         return (
           <div className="session-details">
           <Header>{session.name}</Header>
+          <Grid>
           {charts}
+          </Grid>
           <Button onClick={this.props.onExit}>Exit</Button>
           </div>
           );

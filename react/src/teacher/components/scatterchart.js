@@ -35,6 +35,12 @@ export default class ScatterChart extends Component{
                         time: {
                             unit: 'minute'
                         }
+                    }],
+                    yAxes: [{
+                        ticks: {
+                            suggestedMin: 1,
+                            suggestedMax: 7
+                        }
                     }]
                 }
             }

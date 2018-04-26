@@ -50,11 +50,9 @@ export default class SessionList extends Component{
           <Menu secondary={true} vertical={true} fluid={true}>
             {items.map((item, i) => (
                 <a className="item" key={i} onClick={(e)=>this.props.onOpenSession(e, item)}>
-                    <div>
                     {item.name}
                     <Button floated="right" onClick={()=>this.deleteSession(item.id)} >Delete</Button>
                     <div style={{clear: 'both'}} ></div>
-                    </div>
                 </a>
             ))}
           </Menu>
