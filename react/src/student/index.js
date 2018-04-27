@@ -89,7 +89,7 @@ class Student extends Component {
 
         const welcome = <Container>
                 <Header size="huge" className={"primary-text"} style={{"font-size": "4em"}}>Dot Collector</Header>
-                <p className="primary-text subtitle">Please input the session name</p>
+                <p className="primary-text subtitle">Please input the session code</p>
                 {error ? <p className="primary-text subtitle"><strong>Error!</strong> {error.name}: {error.description}</p> : ""}
                 <Form onSubmit={this.submitAccessCode}>
                     <Form.Input size="medium" name="givenAccessCode" value={givenAccessCode} style={{"width": "100px"}} onChange={this.updateFormState} as={Input}>
