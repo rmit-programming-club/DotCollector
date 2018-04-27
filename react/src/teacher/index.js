@@ -27,32 +27,27 @@ class Teacher extends Component {
     }
 
     render() {
+        let content;
         if(!this.state.splashOpen && !this.state.sessionDetailsOpen){
-        return (
-            <div className={"teacher-background"}>
-              <HeaderBar />
+            content = ( <div>
               <Button onClick={this.openSessionDialogue}>New Session</Button>
               <CreateSessionModal onSubmit={this.newSession} isOpen={this.state.modalOpen}/>
               <SessionListing onOpenSession={this.openSession}/>
-            </div>
-        )
+              </div>
+            );
         }
         else if(this.state.sessionDetailsOpen){
-            return (
-                <div className={"teacher-background"}>
-                    <HeaderBar />
-                    <SessionDetailsPage session={this.state.session} onExit={this.openListing}/>
-                </div>
-            )
+            content = <SessionDetailsPage session={this.state.session} onExit={this.openListing}/>;
         }
         else{
-            return (
-                <div className={"teacher-background"}>
-                    <HeaderBar />
-                    <NewSessionPage sessionName={this.state.sessionName} onEndSession={this.endSession}/> 
-                </div>
-          )
+            content = <NewSessionPage sessionName={this.state.sessionName} onEndSession={this.endSession}/>;
         }
+        return (
+            <div className={"teacher-background"}>
+              <HeaderBar />
+              {content}
+            </div>
+        )
     }
 
     newSession = (name) => {
