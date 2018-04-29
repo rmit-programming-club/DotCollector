@@ -13,4 +13,5 @@ class SessionList(PersistantObject):
     def get_by_code(self, session_code):
         for session in self.sessions:
             if session['accessCode'] == session_code:
-                return session
+                if session['active']:
+                    return session
