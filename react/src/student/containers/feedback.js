@@ -13,6 +13,10 @@ const QUESTIONS = [
         title: "Do you understand the content?",
         min: "Not at all.",
         max: "Wholly."
+    }, {
+        title: "Do you find the content interesting?",
+        min: "Not at all.",
+        max: "Incredibly."
     }];
 
 const sessionsEndpoint = 'https://api.dot.hazelfire.org/sessions/'

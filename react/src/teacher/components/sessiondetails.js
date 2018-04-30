@@ -7,7 +7,8 @@ const sessionsEndpoint = 'https://api.dot.hazelfire.org/sessions'
 
 const QUESTIONS = [
     "What is the pace of the lecture?",
-    "Do you understand the content?"
+    "Do you understand the content?",
+    "Do you find the content interesting?"
 ]
 
 export default class SessionDetailsPage extends Component{
