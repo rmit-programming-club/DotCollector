@@ -7,21 +7,22 @@ const QuestionBox = (props) => {
     const {title, min, max} = question;
 
     console.log(isMobile);
-    const buttons = isMobile ? (
+    const buttons = (
+      <div>
+          <Button basic color="red" onClick={()=>onFeedback(1)}className="basic-red-button">{min}</Button>
+          {[2,3,4].map(rating =>(
+          <Button basic color="red" onClick={()=>onFeedback(rating)} className="basic-red-button">{rating}</Button> 
+          ))}
+          <Button basic color="red" onClick={()=>onFeedback(5)} className="basic-red-button">{max}</Button>
+      </div>
+    );
+    const buttonGroups = isMobile ? (
         <Button.Group as={Container} basic vertical fluid className="ui 5 buttons" textAlign="center">
-              <Button basic color="red" onClick={()=>onFeedback(1)}className="basic-red-button">{min}</Button>
-              {[2,3,4].map(rating =>(
-              <Button basic color="red" onClick={()=>onFeedback(rating)} className="basic-red-button">{rating}</Button> 
-              ))}
-              <Button basic color="red" onClick={()=>onFeedback(5)} className="basic-red-button">{max}</Button>
+          {buttons}
         </Button.Group>
     ) : (
         <Container className="ui 5 buttons" textAlign="center">
-              <Button basic color="red" onClick={()=>onFeedback(1)}className="basic-red-button">{min}</Button>
-            {[2,3,4].map(rating =>(
-              <Button basic color="red" onClick={()=>onFeedback(rating)} className="basic-red-button">{rating}</Button> 
-            ))}
-              <Button basic color="red" onClick={()=>onFeedback(5)} className="basic-red-button">{max}</Button>
+              {buttons}
         </Container>
     );
 
@@ -32,7 +33,7 @@ const QuestionBox = (props) => {
                     <Card.Header>{title}</Card.Header>
                 </Card.Content>
                 <Card.Content>
-                    {buttons}
+                    {buttonGroups}
                 </Card.Content>
             </Card>
         </div>
