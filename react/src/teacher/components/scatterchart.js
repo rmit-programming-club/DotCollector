@@ -39,7 +39,7 @@ export default class ScatterChart extends Component{
                     yAxes: [{
                         ticks: {
                             suggestedMin: 1,
-                            suggestedMax: 7
+                            suggestedMax: 5
                         }
                     }]
                 }
