@@ -5,12 +5,13 @@ import Feedback from "./containers/feedback"
 
 import "semantic-ui-css/semantic.min.css";
 import "../css/sass/index.sass";
-import {Container, Form, Header, Image, Input} from "semantic-ui-react";
+import {Container, Form, Header, Image, Input, Dimmer} from "semantic-ui-react";
 
 import HeaderBar from "../components/header";
 
 import DotLogo from "../../resources/dotlogo.png";
 const getSessionByAccessCodeEndpoint = new URL("https://api.dot.hazelfire.org/sessionByAccessCode");
+const sessionsEndpoint = "https://api.dot.hazelfire.org/sessions"
 
 
 class Student extends Component {
@@ -21,8 +22,34 @@ class Student extends Component {
             loading: false,
             error: false,
 
-            givenAccessCode: ""
+            givenAccessCode: "",
+            ended: false
         };
+    }
+
+    componentDidMount(){
+    }
+
+    checkClosed = () => {
+        const {id} = this.state.session;
+        const endpoint = sessionsEndpoint + "/" + id;
+        fetch(endpoint, {
+            headers: new Headers({
+                'Content-Type': 'application/json'
+            })
+        }).
+            then(res => res.json()).
+            then(
+                (result)=>{
+                    if(!result.active){
+                        this.setState({
+                            ended: true
+                        });
+                    }
+                },
+                (error)=>{
+                }
+            )
     }
 
     updateFormState = (e, {name, value}) => {
@@ -80,12 +107,19 @@ class Student extends Component {
                 }
             })
         });
+        this.interval = setInterval(this.checkClosed, 1000);
     };
 
     render() {
         /* TODO make local styles into classes. */
         console.log(this.state);
-        const {session, loading, error, givenAccessCode} = this.state;
+        const {session, loading, error, givenAccessCode, ended} = this.state;
+
+        const exitSession = (
+            <Dimmer active={ended}>
+                <Header as='h2' inverted>The session has now ended, thank you for your feedback</Header>
+            </Dimmer>
+        );
 
         const welcome = <Container>
                 <Header size="huge" className={"primary-text"} style={{"font-size": "4em"}}>Dot Collector</Header>
@@ -99,12 +133,15 @@ class Student extends Component {
             </Container>;
 
         return (
-            <Container className="trial" textAlign="center">
-                <Image src={DotLogo} centered/>
-                {loading && <Container><Header size="huge" className={"primary-text"} style={{"font-size": "4em"}}>Dot Collector</Header><p className="primary-text">fetching request ...</p></Container>}
-                {!loading && !session && welcome}
-                {!loading && !error && session && <Feedback session={session}/>}
-            </Container>
+            <Dimmer.Dimmable dimmed={false}>
+                {exitSession}
+                <Container className="trial" textAlign="center">
+                    <Image src={DotLogo} centered/>
+                    {loading && <Container><Header size="huge" className={"primary-text"} style={{"font-size": "4em"}}>Dot Collector</Header><p className="primary-text">fetching request ...</p></Container>}
+                    {!loading && !session && welcome}
+                    {!loading && !error && session && <Feedback session={session} allowDim={!ended}/>}
+                </Container>
+            </Dimmer.Dimmable>
         );
     }
 }

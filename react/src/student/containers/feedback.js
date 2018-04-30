@@ -31,20 +31,20 @@ export default class Feedback extends Component {
     }
 
     render() {
-        const {session} = this.props;
+        const {session, allowDim} = this.props;
         const {accessCode, name, id} = session;
         const {sending, timeout} = this.state;
         // TODO adjust styling here
         
         const dimmer = (
-            <Dimmer active>
+            <Dimmer active={sending && allowDim}>
                 <Loader />
                 <Header inverted>Please wait {timeout} seconds to enter feedback</Header>
             </Dimmer>
         );
         return (
             <div>
-                {sending && dimmer}
+                {dimmer}
                 <Container textAlign="center">
                     <p className="primary-text">Your current session is {accessCode}: {name}</p>
                 </Container>
