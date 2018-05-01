@@ -41,7 +41,7 @@ class Student extends Component {
             then(res => res.json()).
             then(
                 (result)=>{
-                    if(!result.active){
+                    if(result.active === false){
                         this.setState({
                             ended: true
                         });
