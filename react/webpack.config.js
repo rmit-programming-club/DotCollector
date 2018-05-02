@@ -3,10 +3,7 @@ const path = require('path');
 const HtmlWebPackPlugin = require("html-webpack-plugin");
 
 module.exports = {
-    entry: {
-        teacher: "./src/teacher/index.js",
-        student: "./src/student/index.js"
-    },
+    entry: "./src/index.js",
     output: {
         path: path.resolve(__dirname, 'dist'),
         filename: "[name]-bundle.js",
@@ -18,7 +15,8 @@ module.exports = {
         },
         hot: false, // hot module replacement. Depends on HotModuleReplacementPlugin
         https: false, // true for self-signed, object for cert authority
-        noInfo: true // only errors & warns on hot reload
+        noInfo: true, // only errors & warns on hot reload
+        historyApiFallback: { index: '/' }
     },
     module: {
         rules: [
@@ -66,14 +64,8 @@ module.exports = {
     },
     plugins: [
         new HtmlWebPackPlugin({
-            template: "./src/student/student.html",
-            filename: "./student.html",
-            chunks: ["student"]
-        }),
-        new HtmlWebPackPlugin({
-            template: "./src/teacher/teacher.html",
-            filename: "./teacher.html",
-            chunks: ["teacher"]
+            template: "./src/index.html",
+            filename: "./index.html"
         })
     ],
     watch: false,

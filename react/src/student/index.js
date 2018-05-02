@@ -146,7 +146,4 @@ class Student extends Component {
     }
 }
 
-ReactDOM.render(
-    <Student/>,
-    document.getElementById("react-entry")
-);
+export default Student

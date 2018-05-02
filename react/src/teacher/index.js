@@ -72,7 +72,5 @@ class Teacher extends Component {
         this.setState({sessionDetailsOpen: false});
     }
 }
-ReactDOM.render(
-    <Teacher/>,
-    document.getElementById('react-entry')
-);
+
+export default Teacher

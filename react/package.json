@@ -37,6 +37,7 @@
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
     "react-modal": "^3.3.2",
+    "react-router-dom": "^4.2.2",
     "semantic-ui-react": "^0.79.0"
   }
 }
