@@ -1,7 +1,5 @@
 import React, {Component} from 'react';
-import {Header,List, Item} from 'semantic-ui-react';
-import SplashScreen from './splash.js'
-import RealtimeSession from './realtimesession.js'
+import ActiveSessionPage from './activesessionpage'
 
 const sessionsEndpoint = 'https://api.dot.hazelfire.org/sessions'
 
@@ -11,8 +9,7 @@ export default class NewSessionPage extends Component{
         this.state = {
             error: null,
             isLoaded: false,
-            session: {},
-            splash: true
+            session: {}
         }
     }
 
@@ -44,7 +41,7 @@ export default class NewSessionPage extends Component{
     }
 
     render() {
-      const { error, isLoaded, items } = this.state;
+      const { error, isLoaded, session } = this.state;
       if (error) {
         return <div className="new-session-page">Error: {error.message}</div>;
       }
@@ -54,37 +51,13 @@ export default class NewSessionPage extends Component{
       else{
         return (
           <div className="new-session-page">
-              { this.state.splash ?
-              <SplashScreen code={this.state.session.accessCode} onFeedback={this.toggleSplash}/> :
-              <RealtimeSession session={this.state.session} onSplash={this.toggleSplash} onEndSession={this.endSession}/>
-              }
+              <ActiveSessionPage session={this.state.session} />
           </div>
           );
       }
     }
 
-    toggleSplash = () =>{
-        this.setState({splash: !this.state.splash});
-    }
-    
-    endSession = () =>{
-        const endpoint = sessionsEndpoint + "/" + this.state.session.id
-        fetch(endpoint, {
-            method: 'PATCH',
-            headers: new Headers({
-                'Content-Type': 'application/json'
-            }),
-            body: JSON.stringify({
-                'active': false
-            })
-        }).
-        then(
-            (result)=>{
-                this.props.onEndSession();
-            },
-            (error)=>{
-                this.props.onEndSession();
-            }
-        );
+    onEndSession = () =>{
+       this.props.onEndSession();
     }
 }

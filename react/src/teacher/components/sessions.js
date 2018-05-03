@@ -38,6 +38,8 @@ export default class SessionList extends Component{
 
     render() {
       const { error, isLoaded, items } = this.state;
+      const activeSessions = items.filter((session) => session.active);
+      const inactiveSessions = items.filter((session) => !session.active);
       if (error) {
         return <div className="session-listing">Error: {error.message}</div>;
       }
@@ -47,19 +49,26 @@ export default class SessionList extends Component{
       else{
         return (
           <div className="session-listing">
+          <Header>Active Sessions</Header>
           <Menu secondary={true} vertical={true} fluid={true}>
-            {items.map((item, i) => (
-                <a className="item" key={i} onClick={(e)=>this.props.onOpenSession(e, item)}>
-                    {item.name}
-                    <Button floated="right" onClick={()=>this.deleteSession(item.id)} >Delete</Button>
-                    <div style={{clear: 'both'}} ></div>
-                </a>
-            ))}
+            {activeSessions.map(this.sessionButton)}
+          </Menu>
+          <Header>Inactive Sessions</Header>
+          <Menu secondary={true} vertical={true} fluid={true}>
+            {inactiveSessions.map(this.sessionButton)}
           </Menu>
           </div>
           );
       }
     }
+
+    sessionButton = (session, index) => (
+        <a className="item" key={index} onClick={(e)=>this.props.onOpenSession(e, session)}>
+            {session.name}
+            <Button floated="right" onClick={()=>this.deleteSession(session.id)} >Delete</Button>
+            <div style={{clear: 'both'}} ></div>
+        </a>
+    )
 
     deleteSession = (id) =>{
         this.setState({isLoaded: false})

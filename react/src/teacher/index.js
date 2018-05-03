@@ -12,6 +12,7 @@ import SessionListing from './components/sessions'
 import CreateSessionModal from './components/createsessionmodal'
 import NewSessionPage from './components/newsessionpage'
 import SessionDetailsPage from './components/sessiondetails'
+import ActiveSessionPage from './components/activesessionpage'
 
 
 class Teacher extends Component {
@@ -37,7 +38,12 @@ class Teacher extends Component {
             );
         }
         else if(this.state.sessionDetailsOpen){
-            content = <SessionDetailsPage session={this.state.session} onExit={this.openListing}/>;
+            if(this.state.session.active){
+                content = <ActiveSessionPage session={this.state.session} onEndSession={this.openListing}/>
+            }
+            else{
+                content = <SessionDetailsPage session={this.state.session} onExit={this.openListing}/>;
+            }
         }
         else{
             content = <NewSessionPage sessionName={this.state.sessionName} onEndSession={this.endSession}/>;
