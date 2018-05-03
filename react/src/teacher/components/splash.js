@@ -18,7 +18,7 @@ export default class SplashScreen extends Component{
           <Grid centered>
             <Grid.Column verticalAlign="middle" textAlign="center">
             <Header>Go to</Header>
-            <Header><a href="http://dot.hazelfire.org/student.html">dot.hazelfire.org/student.html</a></Header>
+            <Header><a href="http://dot.hazelfire.org/student">dot.hazelfire.org/student</a></Header>
             <Header>and enter the following code into your device</Header>
             <Header>{this.props.code}</Header>
             <Button onClick={this.props.onFeedback}>To feedback</Button>
