@@ -36,15 +36,8 @@ export default class Feedback extends Component {
         const {sending, timeout} = this.state;
         // TODO adjust styling here
         
-        const dimmer = (
-            <Dimmer active={sending && allowDim}>
-                <Loader />
-                <Header inverted>Please wait {timeout} seconds to enter feedback</Header>
-            </Dimmer>
-        );
         return (
             <div>
-                {dimmer}
                 <Container textAlign="center">
                     <p className="primary-text">Your current session is {accessCode}: {name}</p>
                 </Container>
@@ -60,22 +53,6 @@ export default class Feedback extends Component {
         )
     }
     
-    timeoutTick = () =>{
-        let timeout = this.state.timeout;
-        timeout--;
-        if(timeout == 0){
-            this.setState({
-                sending: false,
-                timeout: 0
-            });
-            clearInterval(this.intervalId);
-        }
-        else{
-            this.setState({
-                timeout: timeout
-            });
-        }
-    }
 
     sendFeedback = (question, feedback)=>{
         const {session} = this.props;

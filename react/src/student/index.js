@@ -115,12 +115,6 @@ class Student extends Component {
         console.log(this.state);
         const {session, loading, error, givenAccessCode, ended} = this.state;
 
-        const exitSession = (
-            <Dimmer active={ended}>
-                <Header as='h2' inverted>The session has now ended, thank you for your feedback</Header>
-            </Dimmer>
-        );
-
         const welcome = <Container>
                 <Header size="huge" className={"primary-text"} style={{"font-size": "4em"}}>Dot Collector</Header>
                 <p className="primary-text subtitle">Please input the session code</p>
@@ -133,15 +127,13 @@ class Student extends Component {
             </Container>;
 
         return (
-            <Dimmer.Dimmable dimmed={false}>
-                {exitSession}
-                <Container className="trial" textAlign="center">
-                    <Image src={DotLogo} centered/>
-                    {loading && <Container><Header size="huge" className={"primary-text"} style={{"font-size": "4em"}}>Dot Collector</Header><p className="primary-text">fetching request ...</p></Container>}
-                    {!loading && !session && welcome}
-                    {!loading && !error && session && <Feedback session={session} allowDim={!ended}/>}
-                </Container>
-            </Dimmer.Dimmable>
+            <Container className="trial" textAlign="center">
+                <Image src={DotLogo} centered/>
+                {loading && <Container><Header size="huge" className={"primary-text"} style={{"font-size": "4em"}}>Dot Collector</Header><p className="primary-text">fetching request ...</p></Container>}
+                {!loading && !session && !ended && welcome}
+                {!loading && !error && session && !ended && <Feedback session={session} allowDim={!ended}/>}
+                {ended && <Header>The session has ended. Thank you for your feedback</Header>}
+            </Container>
         );
     }
 }
