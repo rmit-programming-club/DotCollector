@@ -54,12 +54,10 @@ class Student extends Component {
 
     updateFormState = (e, {name, value}) => {
         this.setState({[name]: value});
-        console.log(name, value);
     };
 
     submitAccessCode = () => {
         if (!this.state.givenAccessCode) {
-            console.log("No givenAccessCode");
             return;
         }
 
@@ -98,7 +96,6 @@ class Student extends Component {
         }).catch(error => {
             // Network error.
             // TODO display error on screen in a readable format.
-            console.log(error);
             this.setState({
                 loading: false,
                 error: {
@@ -112,16 +109,15 @@ class Student extends Component {
 
     render() {
         /* TODO make local styles into classes. */
-        console.log(this.state);
         const {session, loading, error, givenAccessCode, ended} = this.state;
 
         const welcome = <Container>
-                <Header size="huge" className={"primary-text"} style={{"font-size": "4em"}}>Dot Collector</Header>
+                <Header size="huge" className={"primary-text"} style={{"fontSize": "4em"}}>Dot Collector</Header>
                 <p className="primary-text subtitle">Please input the session code</p>
                 {error ? <p className="primary-text subtitle"><strong>Error!</strong> {error.name}: {error.description}</p> : ""}
                 <Form onSubmit={this.submitAccessCode}>
-                    <Form.Input size="medium" name="givenAccessCode" value={givenAccessCode} style={{"width": "100px"}} onChange={this.updateFormState} as={Input}>
-                        <input style={{"text-align": "center"}}/>
+                    <Form.Input size="medium" name="givenAccessCode" value={givenAccessCode} style={{"width": "100px"}} onChange={this.updateFormState}>
+                        <input style={{"textAlign": "center"}}/>
                     </Form.Input> {/* 80 = 6 digit fit perfect. */}
                 </Form>
             </Container>;
