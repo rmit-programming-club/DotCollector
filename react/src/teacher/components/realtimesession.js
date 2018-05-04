@@ -64,7 +64,7 @@ export default class RealtimeSession extends Component{
             graphData.set(feedback.question, currentFeedback);
         }
         
-        const charts = Array.from(graphData.entries()).map((question, i) => (<Grid.Column width={6}><ScatterChart key={i} data={question[1]} name={question[0]} /> </Grid.Column>))
+        const charts = Array.from(graphData.entries()).map((question, i) => (<Grid.Column width={16}><ScatterChart key={i} data={question[1]} name={question[0]} /> </Grid.Column>))
         return (
           <div className="realtime-session">
               <div className="realtime-graphs">

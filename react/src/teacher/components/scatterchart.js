@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {Header, Button} from 'semantic-ui-react';
 import Chart from 'chart.js'
+import './scatter.css'
 
 export default class ScatterChart extends Component{
     constructor(props){
@@ -29,6 +30,7 @@ export default class ScatterChart extends Component{
               }]
           },
           options: {
+            maintainAspectRatio: false,
               scales: {
                     xAxes: [{
                         type: 'time',
@@ -51,7 +53,7 @@ export default class ScatterChart extends Component{
       if(this.ctx){
           this.refreshChart(this.ctx);
       }
-      let canvas = <canvas width="200" height="150" ref={this.loadChart} />;
+      let canvas = <canvas ref={this.loadChart} />;
 
       return (
         <div className="scatter-chart">
