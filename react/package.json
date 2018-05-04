@@ -5,13 +5,15 @@
   "main": "index.js",
   "scripts": {
     "build": "webpack",
-    "start": "webpack-dev-server --config ./webpack.config.js"
+    "start": "webpack-dev-server --config ./webpack.config.js",
+    "test": "jest"
   },
   "author": "",
   "license": "MIT",
   "devDependencies": {
     "2": "^1.0.2",
     "babel-core": "^6.4.5",
+    "babel-jest": "^22.4.3",
     "babel-loader": "^7.1.4",
     "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-plugin-transform-decorators-legacy": "^1.3.4",
@@ -22,7 +24,8 @@
     "file-loader": "^1.1.11",
     "html-loader": "^0.5.5",
     "html-webpack-plugin": "^3.2.0",
-    "node-sass": "^4.8.3",
+    "jest": "^22.4.3",
+    "node-sass": "^4.9.0",
     "sass-loader": "^6.0.7",
     "semantic-ui-css": "^2.3.1",
     "style-loader": "^0.20.3",
@@ -39,5 +42,10 @@
     "react-modal": "^3.3.2",
     "react-router-dom": "^4.2.2",
     "semantic-ui-react": "^0.79.0"
+  },
+  "jest":{
+    "moduleNameMapper": {
+        "\\.(sass|jpg|jpeg|png|css|ttf|svg)$": "<rootDir>/mocks/fileMock.js"
+    }
   }
 }
