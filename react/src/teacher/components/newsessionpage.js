@@ -51,7 +51,7 @@ export default class NewSessionPage extends Component{
       else{
         return (
           <div className="new-session-page">
-              <ActiveSessionPage session={this.state.session} />
+              <ActiveSessionPage session={this.state.session} onEndSession={this.onEndSession}/>
           </div>
           );
       }
