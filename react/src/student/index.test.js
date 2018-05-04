@@ -1,11 +1,12 @@
-import React, {Component} from 'react';
-import ReactDOM from 'react-dom';
+import React from 'react';
+import renderer from 'react-test-renderer';
 import Student from './index';
 
-describe('student', ()=>{
-    it('renders without crashing', () => {
-      const div = document.createElement('div');
-      ReactDOM.render(<Student />, div);
-      ReactDOM.unmountComponentAtNode(div);
-    });
-});
+test('renders the student screen', () => {
+    const component = renderer.create(
+      <Student />,
+    );
+
+    let tree = component.toJSON();
+    expect(tree).toMatchSnapshot();
+  });

@@ -1,0 +1,67 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders the student screen 1`] = `
+<div
+  className="ui center aligned container trial"
+>
+  <img
+    className="ui centered image"
+    src="test-file-stub"
+  />
+  <div
+    className="ui container"
+  >
+    <div
+      className="ui huge header primary-text"
+      style={
+        Object {
+          "fontSize": "4em",
+        }
+      }
+    >
+      Dot Collector
+    </div>
+    <p
+      className="primary-text subtitle"
+    >
+      Please input the session code
+    </p>
+    
+    <form
+      action={undefined}
+      className="ui form"
+      onSubmit={[Function]}
+    >
+      <div
+        className="field"
+      >
+        <div
+          className="ui medium input"
+          content={undefined}
+          style={
+            Object {
+              "width": "100px",
+            }
+          }
+        >
+          <input
+            disabled={undefined}
+            name="givenAccessCode"
+            onChange={[Function]}
+            required={undefined}
+            style={
+              Object {
+                "textAlign": "center",
+              }
+            }
+            tabIndex={undefined}
+            type="text"
+            value=""
+          />
+        </div>
+      </div>
+       
+    </form>
+  </div>
+</div>
+`;
