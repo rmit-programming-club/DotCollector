@@ -26,9 +26,10 @@
     "html-webpack-plugin": "^3.2.0",
     "jest": "^22.4.3",
     "node-sass": "^4.9.0",
-    "sass-loader": "^6.0.7",
+    "react-test-renderer": "^16.3.2",
+    "sass-loader": "^7.0.1",
     "semantic-ui-css": "^2.3.1",
-    "style-loader": "^0.20.3",
+    "style-loader": "^0.21.0",
     "webpack": "^4.4.1",
     "webpack-cli": "^2.0.13",
     "webpack-dev-server": "^3.1.1"
@@ -37,15 +38,15 @@
     "chart.js": "^2.7.2",
     "json-loader": "^0.5.7",
     "prop-types": "^15.5.10",
-    "react": "^15.6.1",
-    "react-dom": "^15.6.1",
+    "react": "^16.3.2",
+    "react-dom": "^16.3.2",
     "react-modal": "^3.3.2",
     "react-router-dom": "^4.2.2",
-    "semantic-ui-react": "^0.79.0"
+    "semantic-ui-react": "^0.80.0"
   },
-  "jest":{
+  "jest": {
     "moduleNameMapper": {
-        "\\.(sass|jpg|jpeg|png|css|ttf|svg)$": "<rootDir>/mocks/fileMock.js"
+      "\\.(sass|jpg|jpeg|png|css|ttf|svg)$": "<rootDir>/mocks/fileMock.js"
     }
   }
 }
