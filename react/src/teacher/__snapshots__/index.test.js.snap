@@ -1,0 +1,49 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders the teacher screen 1`] = `
+<div
+  className="teacher-background"
+>
+  <div
+    className="header-bar"
+  >
+    <div
+      className="ui inverted teacher-background menu"
+    >
+      <div
+        className="item"
+      >
+        <img
+          className="ui mini image"
+          src="test-file-stub"
+        />
+      </div>
+      <div
+        className="item"
+      >
+        <div
+          className="ui header"
+        >
+          Dot Collector
+        </div>
+      </div>
+    </div>
+  </div>
+  <div>
+    <button
+      className="ui button"
+      disabled={undefined}
+      onClick={[Function]}
+      role="button"
+      tabIndex={undefined}
+    >
+      New Session
+    </button>
+    <div
+      className="session-listing"
+    >
+      Loading
+    </div>
+  </div>
+</div>
+`;
